@@ -9,7 +9,7 @@ export const metadata = {
 export default async function QuizPage() {
   try {
     const quizRes = await getUserQuizzes();
-    const quizzes = quizRes.success ? (quizRes.data || []) : [];
+    const quizzes = quizRes?.success ? (quizRes.data || []) : [];
 
     return <QuizClient initialQuizzes={quizzes} />;
   } catch (error: any) {
