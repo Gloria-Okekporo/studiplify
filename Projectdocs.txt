@@ -1,0 +1,740 @@
+If you’re using AI UI generation like Google Stitch, the best approach is to define:
+
+1. **Every page/screen**
+2. **Exact components on each page**
+3. **Layout structure**
+4. **Animation expectations**
+5. **Responsive behavior**
+6. **Design style**
+
+That gives Stitch much better outputs.
+
+---
+
+# Complete UI Architecture For Studiplify
+
+---
+
+# 1. Landing Page (`/`)
+
+This is your marketing page.
+
+## Goal
+
+Convert visitors into users.
+
+---
+
+## Sections Needed
+
+### Hero Section
+
+Should contain:
+
+* Large headline
+* Short subheading
+* CTA buttons
+* Dashboard preview image/mockup
+
+### Example Copy
+
+```txt id="lmn8m6"
+AI-powered study planning for smarter students.
+Plan better. Study consistently. Achieve more.
+```
+
+---
+
+## Navigation Bar
+
+Include:
+
+* Logo
+* Features
+* Pricing
+* About
+* Login button
+* Get Started button
+
+---
+
+## Features Section
+
+Cards showing:
+
+* AI Study Plans
+* Task Management
+* Productivity Analytics
+* Smart Notifications
+* Focus Tracking
+
+---
+
+## Dashboard Preview Section
+
+Large mockup:
+
+* charts
+* study plans
+* progress bars
+* task widgets
+
+---
+
+## Testimonials Section
+
+Student reviews/cards.
+
+---
+
+## FAQ Section
+
+Accordion UI.
+
+---
+
+## Footer
+
+Include:
+
+* social links
+* contact
+* policies
+* copyright
+
+---
+
+## UI Style
+
+Think:
+
+* modern SaaS
+* glassmorphism
+* dark mode
+* gradients
+* floating cards
+
+---
+
+# 2. Signup Page (`/auth/signup`)
+
+## Components
+
+### Left Side
+
+* Branding
+* Illustration
+* motivational text
+
+### Right Side
+
+Signup form:
+
+* Full name
+* Email
+* Password
+* Confirm password
+* Continue with Google
+
+---
+
+## Extra Features
+
+* password strength indicator
+* animated input focus
+* smooth form transitions
+
+---
+
+# 3. Login Page (`/auth/login`)
+
+## Components
+
+* Email
+* Password
+* Remember me
+* Forgot password
+* Login button
+* Social login
+
+---
+
+## UI Feel
+
+Minimal and elegant.
+
+---
+
+# 4. Onboarding Flow (`/onboarding`)
+
+VERY IMPORTANT.
+
+This helps AI generate personalized plans.
+
+---
+
+## Multi-Step Form
+
+### Step 1
+
+Academic info:
+
+* school level
+* courses
+* exam date
+
+### Step 2
+
+Study preferences:
+
+* study hours
+* preferred study style
+* weak subjects
+
+### Step 3
+
+Goals:
+
+* GPA target
+* daily targets
+* productivity goals
+
+---
+
+## UI Requirements
+
+* Progress indicator
+* Smooth transitions
+* Floating cards
+* Animated next button
+
+---
+
+# 5. Main Dashboard (`/dashboard`)
+
+This is the core app page.
+
+---
+
+# Layout
+
+```txt id="5fk0m2"
+Sidebar
+Top Navbar
+Main Content Area
+Right Activity Panel (optional)
+```
+
+---
+
+# Sidebar
+
+Should contain:
+
+* Dashboard
+* Study Plans
+* Tasks
+* Analytics
+* Notifications
+* Settings
+* Logout
+
+---
+
+# Top Navbar
+
+Include:
+
+* Search bar
+* Notification icon
+* User profile dropdown
+* Streak counter
+
+---
+
+# Dashboard Widgets
+
+---
+
+## Welcome Card
+
+```txt id="6yl6lc"
+Good evening, Gloria 👋
+Ready to complete today’s goals?
+```
+
+---
+
+## Progress Cards
+
+Display:
+
+* Study hours
+* Completed tasks
+* Productivity score
+* Weekly streak
+
+---
+
+## AI Study Plan Preview
+
+Show:
+
+* today’s schedule
+* upcoming sessions
+* AI suggestions
+
+---
+
+## Task Summary Widget
+
+Show:
+
+* pending tasks
+* overdue tasks
+* completed tasks
+
+---
+
+## Productivity Chart
+
+Graphs:
+
+* weekly focus time
+* consistency chart
+* subject performance
+
+---
+
+## Motivational AI Card
+
+```txt id="pv36s5"
+"You study best between 9AM–12PM."
+```
+
+---
+
+# Dashboard UI Style
+
+Should feel:
+
+* futuristic
+* organized
+* clean
+* highly interactive
+
+---
+
+# 6. Study Plan Page (`/study-plan`)
+
+This page displays generated plans.
+
+---
+
+# Components
+
+## AI Plan Header
+
+Include:
+
+* plan title
+* generated date
+* regenerate button
+
+---
+
+## Weekly Calendar View
+
+Display:
+
+* subjects
+* time blocks
+* revision sessions
+* breaks
+
+---
+
+## Daily Breakdown Cards
+
+Example:
+
+```txt id="9h42l3"
+8AM - Mathematics
+10AM - Physics Revision
+12PM - Break
+```
+
+---
+
+## AI Recommendation Panel
+
+Suggestions like:
+
+```txt id="sx0kjz"
+Increase Physics practice by 20%
+```
+
+---
+
+## Progress Tracker
+
+Circular progress indicators.
+
+---
+
+# Animation Ideas
+
+* drag transitions
+* fade-in schedule blocks
+* hover glow effects
+
+---
+
+# 7. Tasks Page (`/tasks`)
+
+This should feel like:
+
+* Notion
+* Trello
+* Todoist
+
+---
+
+# Components
+
+## Task Header
+
+* Add task button
+* Filters
+* Search
+
+---
+
+## Kanban Board
+
+Columns:
+
+* To Do
+* In Progress
+* Completed
+
+---
+
+## Task Cards
+
+Should show:
+
+* title
+* priority
+* due date
+* tags
+
+---
+
+## Drag-and-Drop
+
+Very important for modern UX.
+
+---
+
+# 8. Analytics Page (`/analytics`)
+
+One of the most impressive pages.
+
+---
+
+# Sections
+
+## Weekly Overview
+
+* study time
+* task completion
+* consistency score
+
+---
+
+## Graphs
+
+Include:
+
+* bar charts
+* line charts
+* heatmaps
+* pie charts
+
+---
+
+## Subject Analysis
+
+Example:
+
+```txt id="5vgk3o"
+Mathematics: 87%
+Physics: 62%
+```
+
+---
+
+## AI Insights Section
+
+Example:
+
+```txt id="40cwls"
+You perform poorly after 10PM.
+```
+
+---
+
+## Productivity Trends
+
+Show:
+
+* best study days
+* peak focus hours
+* weakest periods
+
+---
+
+# 9. Notifications Page (`/notifications`)
+
+## Components
+
+Notification cards:
+
+* reminders
+* deadlines
+* AI insights
+* streak alerts
+
+---
+
+## Features
+
+* mark as read
+* clear all
+* filter notifications
+
+---
+
+# 10. Focus Session Page (`/focus`)
+
+This is a killer feature.
+
+---
+
+# Components
+
+## Pomodoro Timer
+
+* countdown
+* pause/resume
+
+---
+
+## Current Task Card
+
+Shows:
+
+* active task
+* time remaining
+
+---
+
+## Ambient UI
+
+* relaxing gradients
+* subtle animations
+* fullscreen mode
+
+---
+
+## Focus Stats
+
+* session duration
+* distraction count
+* completed sessions
+
+---
+
+# 11. Settings Page (`/settings`)
+
+---
+
+# Sections
+
+## Profile Settings
+
+* name
+* avatar
+* email
+
+---
+
+## Study Preferences
+
+* preferred hours
+* reminder frequency
+* study methods
+
+---
+
+## Theme Settings
+
+* dark/light mode
+* accent colors
+
+---
+
+## Security
+
+* password reset
+* sessions
+* delete account
+
+---
+
+# 12. Weekly Report Page (`/reports`)
+
+Very useful for showcasing AI.
+
+---
+
+# Components
+
+## Weekly Summary Card
+
+```txt id="x6n6zz"
+You completed 82% of your goals this week.
+```
+
+---
+
+## Charts
+
+* productivity growth
+* focus distribution
+* study time
+
+---
+
+## AI Feedback Report
+
+Include:
+
+* strengths
+* weaknesses
+* recommendations
+
+---
+
+# 13. Mobile Navigation
+
+VERY IMPORTANT.
+
+---
+
+# Bottom Tab Navigation
+
+Include:
+
+* Dashboard
+* Tasks
+* Study Plan
+* Analytics
+* Profile
+
+---
+
+# Mobile UX
+
+* swipe gestures
+* floating action button
+* collapsible widgets
+
+---
+
+# Design System To Tell Google Stitch
+
+You should explicitly mention:
+
+---
+
+## Design Style
+
+```txt id="eq7lvc"
+Modern AI SaaS dashboard with futuristic glassmorphism UI, soft gradients, dark mode, floating cards, smooth shadows, rounded corners, and responsive layouts.
+```
+
+---
+
+## Animations
+
+```txt id="pfy4ll"
+Use Framer Motion animations including fade-ins, stagger reveals, hover scaling, smooth page transitions, floating effects, animated counters, and sliding sidebars.
+```
+
+---
+
+## Color Palette
+
+```txt id="vvjzhv"
+Primary: #4F46E5
+Secondary: #7C3AED
+Accent: #06B6D4
+Background: #0F172A
+Card Background: rgba(255,255,255,0.08)
+```
+
+---
+
+# Best Prompt Structure For Google Stitch
+
+Use this format:
+
+```txt id="v5p3xg"
+Create a modern responsive dashboard UI for an AI-powered study productivity platform called Studiplify.
+
+Features:
+- AI-generated study plans
+- task management
+- productivity analytics
+- reminders
+- notifications
+- focus sessions
+
+Design:
+- futuristic SaaS UI
+- dark mode
+- glassmorphism
+- smooth gradients
+- rounded cards
+- Framer Motion animations
+- responsive mobile-first layout
+
+Include:
+- sidebar navigation
+- analytics charts
+- productivity widgets
+- task boards
+- study schedule calendar
+- AI insight cards
+- streak tracker
+```
+
+---
+
+# Recommended Priority Order For UI Generation
+
+Generate in this order:
+
+1. Landing page
+2. Authentication pages
+3. Dashboard
+4. Task page
+5. Study plan page
+6. Analytics page
+7. Focus page
+8. Settings
+9. Mobile responsiveness
+
+That order makes integration much easier later.
