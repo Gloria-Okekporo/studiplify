@@ -15,7 +15,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
   const { showToast } = useToast();
   const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   // Use a ref to track if we've already synced the initial load
   const hasSyncedInitial = useRef(false);
   const [summaries, setSummaries] = useState<any[]>([]);
@@ -31,7 +31,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
         // Simple merge: take all from server, plus anything we have locally that isn't in server yet
         const serverIds = new Set(initialSummaries.map(s => s.id));
         const localOnly = prev.filter(s => !serverIds.has(s.id));
-        const combined = [...initialSummaries, ...localOnly].sort((a, b) => 
+        const combined = [...initialSummaries, ...localOnly].sort((a, b) =>
           new Date(b.created_at || Date.now()).getTime() - new Date(a.created_at || Date.now()).getTime()
         );
         return combined;
@@ -67,10 +67,10 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
     try {
       const res = await uploadAndSummarize(formData);
       console.log(`[SummarizerClient] [${new Date().toISOString()}] Received Response:`, res);
-      
+
       if (res.success && res.data) {
         const docToInsert = Array.isArray(res.data) ? res.data[0] : res.data;
-        
+
         if (docToInsert && docToInsert.id) {
           console.log(`[SummarizerClient] [${new Date().toISOString()}] Success! Document ID:`, docToInsert.id);
           setSummaries(prev => {
@@ -105,22 +105,14 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
       <DashboardSidebar user={user} onSignOut={handleSignOut} />
 
       <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
-        <DashboardHeader 
-          title="AI Summarizer" 
-          badge={`${summaries?.length || 0} Docs`} 
-          action={
-            <button 
-              onClick={refreshSummaries}
-              className={`p-2 rounded-full hover:bg-surface-dim transition-colors ${isRefreshing ? 'animate-spin' : ''}`}
-            >
-              <span className="material-symbols-outlined text-text-muted">refresh</span>
-            </button>
-          }
+        <DashboardHeader
+          title="AI Summarizer"
+          badge={`${summaries?.length || 0} Docs`}
         />
 
         <div className="flex-1 overflow-y-auto hide-scrollbar">
           <div className="max-w-[1400px] mx-auto px-8 lg:px-12 py-8 space-y-12 pb-32">
-            
+
             {/* Upload Section */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
               <div className="space-y-4">
@@ -137,15 +129,15 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
               </div>
 
               <div className="relative shrink-0">
-                <input 
-                  type="file" 
+                <input
+                  type="file"
                   ref={fileInputRef}
                   accept=".pdf,.docx,.txt"
                   onChange={handleFileUpload}
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   disabled={isUploading}
                 />
-                <button 
+                <button
                   className={`btn-primary !h-16 !px-12 !text-lg shadow-glow-primary group flex items-center gap-3 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
                   {isUploading ? (
@@ -169,7 +161,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               <AnimatePresence mode="popLayout">
                 {summaries.map((s) => (
-                  <motion.div 
+                  <motion.div
                     key={s.id}
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
@@ -189,7 +181,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                       <p className="text-[14px] font-medium text-text-muted line-clamp-3 mb-8 leading-relaxed">
                         {s.summary}
                       </p>
-                      <button 
+                      <button
                         onClick={() => setSelectedSummary(s)}
                         className="mt-auto h-12 rounded-2xl border border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-surface-dim transition-all flex items-center justify-center gap-2"
                       >
@@ -206,7 +198,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
             {summaries.length === 0 && !isUploading && (
               <div className="text-center py-24 bg-surface-dim/30 rounded-[3rem] border border-dashed border-border/40 flex flex-col items-center gap-4">
                 <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] opacity-30">No Documents Synthesized Yet</p>
-                <button 
+                <button
                   onClick={refreshSummaries}
                   className="text-[10px] font-bold text-accent-purple uppercase tracking-widest hover:underline"
                 >
