@@ -1,6 +1,6 @@
 import { redirect } from "next/navigation";
-import SummarizerClient from "./SummarizerClient";
-import { getSummaries } from "@/lib/actions/summaries";
+import SummarizerClient from "./summarizerClient";
+import { getSummaries } from "@/lib/actions/summarizer"
 
 export default async function SummarizerPage() {
   try {
