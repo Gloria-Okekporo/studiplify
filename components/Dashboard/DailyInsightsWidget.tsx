@@ -20,7 +20,7 @@ export default function DailyInsightsWidget({ initialInsight = null }: { initial
     if (res.success) {
       setInsight(res.data);
     } else {
-      setDbError(res.error || 'Connection failed');
+      setDbError(res.message || 'Connection failed');
     }
     setLoading(false);
   };
@@ -53,7 +53,7 @@ export default function DailyInsightsWidget({ initialInsight = null }: { initial
       if (res.success) {
         showToast("Intelligence update complete!", "success");
       } else {
-        showToast(res.error || "Failed to generate engine update.", "error");
+        showToast(res.message || "Failed to generate engine update.", "error");
       }
     } catch (error) {
       showToast("Neural sync failed.", "error");
