@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
 import QuizClient from './QuizClient';
-import { getUserQuizzes } from '@/lib/actions/quiz.actions';
+import { getUserQuizzes } from "@/lib/actions/quizzes";
 
 export const metadata = {
   title: 'AI Quizzes - Studiplify',
