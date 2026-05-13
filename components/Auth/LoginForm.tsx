@@ -29,7 +29,7 @@ export default function LoginForm() {
   };
 
   return (
-    <motion.div 
+    <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-md"
@@ -43,10 +43,10 @@ export default function LoginForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="space-y-2">
             <label className="text-[11px] font-black uppercase tracking-widest text-text-muted px-2">Email Address</label>
-            <input 
-              name="email" 
-              type="email" 
-              required 
+            <input
+              name="email"
+              type="email"
+              required
               placeholder="name@email.com"
               className="w-full h-14 bg-white/50 border border-border/40 rounded-2xl px-6 font-medium focus:ring-2 focus:ring-accent-orange/20 focus:border-accent-orange transition-all outline-none"
             />
@@ -55,12 +55,12 @@ export default function LoginForm() {
           <div className="space-y-2 relative">
             <div className="flex justify-between items-center px-2">
               <label className="text-[11px] font-black uppercase tracking-widest text-text-muted">Password</label>
-              <Link href="/auth/forgot-password" size="sm" className="text-[11px] font-black text-accent-orange uppercase tracking-widest hover:underline">Forgot?</Link>
+              <Link href="/auth/forgot-password" className="text-[11px] font-black text-accent-orange uppercase tracking-widest hover:underline">Forgot?</Link>
             </div>
-            <input 
-              name="password" 
-              type="password" 
-              required 
+            <input
+              name="password"
+              type="password"
+              required
               placeholder="••••••••"
               className="w-full h-14 bg-white/50 border border-border/40 rounded-2xl px-6 font-medium focus:ring-2 focus:ring-accent-orange/20 focus:border-accent-orange transition-all outline-none"
             />
@@ -73,8 +73,8 @@ export default function LoginForm() {
             </div>
           )}
 
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={loading}
             className="w-full btn-primary h-16 text-lg group"
           >
