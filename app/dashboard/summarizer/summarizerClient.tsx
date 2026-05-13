@@ -1,27 +1,27 @@
 "use client";
 
 type SummarizerClientProps = {
-  initialSummaries: any[];
+    initialSummaries: any[];
 };
 
 export default function SummarizerClient({
-  initialSummaries,
+    initialSummaries,
 }: SummarizerClientProps) {
-  return (
-    <div>
-      <h1>Summaries</h1>
-
-      {initialSummaries?.length === 0 ? (
-        <p>No summaries available.</p>
-      ) : (
+    return (
         <div>
-          {initialSummaries.map((summary, index) => (
-            <div key={index}>
-              <p>{summary.title || "Untitled Summary"}</p>
-            </div>
-          ))}
+            <h1>Summaries</h1>
+
+            {initialSummaries?.length === 0 ? (
+                <p>No summaries available.</p>
+            ) : (
+                <div>
+                    {initialSummaries.map((summary, index) => (
+                        <div key={index}>
+                            <p>{summary.title || "Untitled Summary"}</p>
+                        </div>
+                    ))}
+                </div>
+            )}
         </div>
-      )}
-    </div>
-  );
+    );
 }
