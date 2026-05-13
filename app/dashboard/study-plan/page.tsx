@@ -1,20 +1,21 @@
-import StudyPlansClient from '@/components/Dashboard/StudyPlansClient';
-import { getStudyPlans } from '@/lib/actions/studyPlans';
-import { redirect } from 'next/navigation';
+import { redirect } from "next/navigation";
+import StudyPlansClient from "./StudyPlansClient";
+import { getStudyPlans } from "@/lib/actions/studyPlans";
 
-export const metadata = {
-  title: 'Study Plans - Studiplify',
-};
-
-export default async function StudyPlansPage() {
+export default async function StudyPlanPage() {
   try {
     const plansRes = await getStudyPlans();
-    const plans = plansRes.success ? plansRes.data : [];
+
+    const plans = plansRes?.success
+      ? (plansRes?.data || [])
+      : [];
+
     return <StudyPlansClient initialPlans={plans} />;
   } catch (error: any) {
-    if (error.message === 'Unauthorized') {
-      redirect('/auth/login');
+    if (error.message === "Unauthorized") {
+      redirect("/auth/login");
     }
-    return <div>Something went wrong. Please try again.</div>;
+
+    return <StudyPlansClient initialPlans={[]} />;
   }
 }
