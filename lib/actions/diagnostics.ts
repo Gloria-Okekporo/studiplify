@@ -1,6 +1,6 @@
 'use server';
 
-import { createServerSupabaseClient } from './supabase-server';
+import { createServerSupabaseClient } from '../supabase-server';
 
 export async function runDiagnostics() {
   const supabase = createServerSupabaseClient();
@@ -39,7 +39,7 @@ export async function runDiagnostics() {
         const { count, error } = await supabase
           .from(name)
           .select('*', { count: 'exact', head: true });
-        
+
         let status = error ? `Error: ${error.message}` : `Accessible (${count} items)`;
         if (cols) {
           status += ` | Cols: ${cols.map((c: any) => c.column_name).join(', ')}`;
