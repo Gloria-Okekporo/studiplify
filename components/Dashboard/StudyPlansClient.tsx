@@ -187,7 +187,8 @@ export default function StudyPlansClient({ initialPlans }: { initialPlans: any[]
                 initial={{ opacity: 0, scale: 0.95, y: 20 }}
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                className="relative bg-white w-full max-w-lg rounded-[3.5rem] p-10 lg:p-14 shadow-soft-2xl border border-white/60 overflow-hidden"
+                onClick={(e) => e.stopPropagation()}
+                className="relative z-10 bg-white w-full max-w-lg rounded-[3.5rem] p-10 lg:p-14 shadow-soft-2xl border border-white/60 overflow-hidden"
               >
                 <div className="mb-10 text-center">
                   <div className="w-20 h-20 bg-accent-orange/10 text-accent-orange rounded-[2.2rem] flex items-center justify-center mx-auto mb-6">
@@ -209,15 +210,18 @@ export default function StudyPlansClient({ initialPlans }: { initialPlans: any[]
                   </div>
                   <div className="space-y-2">
                     <label className="text-[11px] font-black uppercase tracking-widest text-text-muted px-2">Complexity Level</label>
-                    <select 
-                      name="difficulty" 
-                      className="w-full h-16 bg-surface-dim border border-border/30 rounded-2xl px-6 font-medium focus:ring-2 focus:ring-accent-orange/20 outline-none appearance-none"
-                    >
-                      <option value="Beginner">Beginner (Foundation)</option>
-                      <option value="Intermediate">Intermediate (Core)</option>
-                      <option value="Advanced">Advanced (Expertise)</option>
-                      <option value="Expert">Expert (Mastery)</option>
-                    </select>
+                    <div className="relative">
+                      <select 
+                        name="difficulty" 
+                        className="w-full h-16 bg-surface-dim border border-border/30 rounded-2xl px-6 font-medium focus:ring-2 focus:ring-accent-orange/20 outline-none appearance-none"
+                      >
+                        <option value="Beginner">Beginner (Foundation)</option>
+                        <option value="Intermediate">Intermediate (Core)</option>
+                        <option value="Advanced">Advanced (Expertise)</option>
+                        <option value="Expert">Expert (Mastery)</option>
+                      </select>
+                      <span className="material-symbols-outlined absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-text-muted">expand_more</span>
+                    </div>
                   </div>
                   <button 
                     type="submit"

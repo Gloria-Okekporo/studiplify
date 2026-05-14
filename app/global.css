@@ -18,7 +18,7 @@
 
 @layer base {
   * {
-    @apply border-border selection:bg-accent-orange/20 selection:text-text-dark;
+    @apply border-border selection:bg-accent-orange selection:text-white;
   }
 
   body {
@@ -37,18 +37,18 @@
   /* Material Symbols Configuration */
   .material-symbols-outlined {
     font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    @apply transition-all duration-200;
+    @apply transition-all duration-100;
   }
 }
 
 @layer components {
   /* Card Styles */
   .card-base {
-    @apply bg-surface border border-border shadow-sm rounded-2xl transition-all duration-200;
+    @apply bg-surface border border-border shadow-sm rounded-2xl transition-all duration-150;
   }
 
   .card-interactive {
-    @apply card-base hover:shadow-md hover:border-accent-orange/30 active:scale-[0.98];
+    @apply card-base hover:shadow-md hover:border-accent-orange/30 active:scale-[0.97];
   }
 
   .card-glass {
@@ -56,12 +56,12 @@
   }
 
   .card-premium {
-    @apply card-glass hover:shadow-xl hover:border-accent-orange/20 transition-all duration-300;
+    @apply card-glass hover:shadow-xl hover:border-accent-orange/20 transition-all duration-200;
   }
 
   /* Button Styles */
   .btn-base {
-    @apply inline-flex items-center justify-center gap-2 px-6 h-12 rounded-full font-bold transition-all duration-150 active:scale-95 disabled:opacity-50 disabled:pointer-events-none;
+    @apply inline-flex items-center justify-center gap-2 px-6 h-12 rounded-full font-bold transition-all duration-75 active:scale-90 disabled:opacity-50 disabled:pointer-events-none;
   }
 
   .btn-primary {
@@ -77,7 +77,7 @@
   }
 
   .btn-icon {
-    @apply flex items-center justify-center w-12 h-12 rounded-full transition-all duration-150 hover:bg-surface-dim active:scale-90;
+    @apply flex items-center justify-center w-12 h-12 rounded-full transition-all duration-75 hover:bg-surface-dim active:scale-90;
   }
 
   /* Input Styles */

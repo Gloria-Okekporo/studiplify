@@ -47,7 +47,7 @@ export async function generateAIStudyPlan(subject: string, difficulty: string) {
       }`;
 
       try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -156,7 +156,10 @@ export async function updatePlanProgress(planId: string, progress: number) {
 
   const { error } = await supabase
     .from('study_plans')
-    .update({ updated_at: new Date().toISOString() })
+    .update({ 
+      progress: progress,
+      updated_at: new Date().toISOString() 
+    })
     .eq('id', planId)
     .eq('user_id', session.user.id);
 

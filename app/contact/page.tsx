@@ -114,7 +114,7 @@ export default function ContactPage() {
               <div className="relative z-10">
                 <h4 className="text-3xl lg:text-4xl font-black mb-6 leading-[1.05] tracking-tighter">Scale your focus <br/>with Studiplify.</h4>
                 <p className="text-white/70 font-medium mb-12 max-w-[320px] leading-relaxed text-lg">Experience the future of academic orchestration today.</p>
-                <Link href="/signup" className="inline-flex items-center gap-4 bg-accent-orange text-white px-10 py-5 rounded-full font-black text-[13px] uppercase tracking-widest hover:bg-white hover:text-accent-orange shadow-glow-primary transition-all active:scale-95">
+                <Link href="/auth/signup" className="inline-flex items-center gap-4 bg-accent-orange text-white px-10 py-5 rounded-full font-black text-[13px] uppercase tracking-widest hover:bg-white hover:text-accent-orange shadow-glow-primary transition-all active:scale-95">
                   Get Started Free <span className="material-symbols-outlined text-[20px] font-bold">rocket_launch</span>
                 </Link>
               </div>

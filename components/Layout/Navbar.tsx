@@ -118,10 +118,11 @@ export default function Navbar() {
                 >
                   Sign In
                 </Link>
-                <Link href="/auth/signup">
-                  <button className="h-11 md:h-12 px-6 md:px-8 rounded-full bg-accent-orange text-white font-black text-[11px] uppercase tracking-widest hover:scale-[1.03] hover:shadow-glow-orange active:scale-95 transition-all shadow-md">
-                    Get Started
-                  </button>
+                <Link 
+                  href="/auth/signup"
+                  className="h-11 md:h-12 px-6 md:px-8 rounded-full bg-accent-orange text-white font-black text-[11px] uppercase tracking-widest hover:scale-[1.03] hover:shadow-glow-orange active:scale-95 transition-all shadow-md flex items-center justify-center"
+                >
+                  Get Started
                 </Link>
               </div>
             )
@@ -166,23 +167,29 @@ export default function Navbar() {
               <div className="pt-6 mt-4 border-t border-border/40 flex flex-col gap-3">
                 {!isAuthenticated ? (
                   <>
-                    <Link href="/auth/login" onClick={() => setIsOpen(false)}>
-                      <button className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20">
-                        Sign In
-                      </button>
+                    <Link 
+                      href="/auth/login" 
+                      onClick={() => setIsOpen(false)}
+                      className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20 flex items-center justify-center"
+                    >
+                      Sign In
                     </Link>
-                    <Link href="/auth/signup" onClick={() => setIsOpen(false)}>
-                      <button className="w-full h-14 rounded-2xl bg-accent-orange text-white font-black text-[12px] uppercase tracking-widest shadow-glow-orange">
-                        Get Started
-                      </button>
+                    <Link 
+                      href="/auth/signup" 
+                      onClick={() => setIsOpen(false)}
+                      className="w-full h-14 rounded-2xl bg-accent-orange text-white font-black text-[12px] uppercase tracking-widest shadow-glow-orange flex items-center justify-center"
+                    >
+                      Get Started
                     </Link>
                   </>
                 ) : (
                   <>
-                    <Link href="/dashboard" onClick={() => setIsOpen(false)}>
-                      <button className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20">
-                        Dashboard
-                      </button>
+                    <Link 
+                      href="/dashboard" 
+                      onClick={() => setIsOpen(false)}
+                      className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20 flex items-center justify-center"
+                    >
+                      Dashboard
                     </Link>
                     <button 
                       onClick={() => { handleSignOut(); setIsOpen(false); }}
