@@ -113,7 +113,7 @@ export default function Navbar() {
             ) : (
               <div className="flex items-center gap-2 md:gap-4">
                 <Link 
-                  href="/auth/login" 
+                  href="/auth/login"
                   className="hidden sm:flex items-center h-11 px-6 text-[13px] font-black text-text-dark/60 hover:text-accent-orange uppercase tracking-widest transition-colors"
                 >
                   Sign In
@@ -168,14 +168,14 @@ export default function Navbar() {
                 {!isAuthenticated ? (
                   <>
                     <Link 
-                      href="/auth/login" 
+                      href="/auth/login"
                       onClick={() => setIsOpen(false)}
                       className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20 flex items-center justify-center"
                     >
                       Sign In
                     </Link>
                     <Link 
-                      href="/auth/signup" 
+                      href="/auth/signup"
                       onClick={() => setIsOpen(false)}
                       className="w-full h-14 rounded-2xl bg-accent-orange text-white font-black text-[12px] uppercase tracking-widest shadow-glow-orange flex items-center justify-center"
                     >
@@ -185,7 +185,7 @@ export default function Navbar() {
                 ) : (
                   <>
                     <Link 
-                      href="/dashboard" 
+                      href="/dashboard"
                       onClick={() => setIsOpen(false)}
                       className="w-full h-14 rounded-2xl bg-surface-dim text-text-dark font-black text-[12px] uppercase tracking-widest border border-border/20 flex items-center justify-center"
                     >

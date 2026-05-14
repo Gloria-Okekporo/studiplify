@@ -42,8 +42,11 @@ export default function SignUpForm() {
         <p className="text-text-muted font-medium max-w-xs mx-auto">
           We've sent a verification link to your email. Please verify your account to continue.
         </p>
-        <Link href="/auth/login">
-          <button className="btn-secondary w-full mt-8">Back to Login</button>
+        <Link 
+          href="/auth/login"
+          className="btn-secondary w-full mt-8 flex items-center justify-center"
+        >
+          Back to Login
         </Link>
       </motion.div>
     );
