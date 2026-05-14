@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import TasksClient from "./TasksClient";
+import TasksClient from "@/components/Dashboard/TasksClient";
 import { getTasks } from "@/lib/actions/tasks";
 
 export default async function TasksPage() {

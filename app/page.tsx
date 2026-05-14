@@ -4,8 +4,28 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import Navbar from '@/components/Layout/Navbar';
 import Footer from '@/components/Layout/Footer';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 
 export default function LandingPage() {
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleCTAClick = () => {
+    const href = isAuthenticated ? '/dashboard/study-plan' : '/auth/signup';
+    router.push(href);
+  };
+
+  if (!mounted) {
+    return <div className="min-h-screen bg-background" />; // Simple skeleton/blank during hydration
+  }
+
   return (
     <main className="relative min-h-screen overflow-x-hidden bg-background">
 
@@ -13,8 +33,8 @@ export default function LandingPage() {
       <Navbar />
 
       {/* Hero Section */}
-      <section id="architecture" className="relative min-h-[90vh] md:min-h-screen flex items-center justify-center pt-24 md:pt-32 pb-20 md:pb-40 px-6 md:px-12 overflow-hidden">
-        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 items-center">
+      <section id="architecture" className="relative min-h-[75vh] md:min-h-[85vh] flex items-center justify-center pt-16 md:pt-20 pb-12 md:pb-24 px-6 md:px-12 overflow-hidden">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
           
           {/* Left Side: Copy & CTAs */}
           <motion.div 
@@ -23,36 +43,40 @@ export default function LandingPage() {
             transition={{ duration: 0.8, ease: "easeOut" }}
             className="relative z-30"
           >
-            <motion.div 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-full bg-accent-orange/10 text-accent-orange mb-8 border border-accent-orange/20"
-            >
-              <span className="material-symbols-outlined text-[16px]">auto_awesome</span>
-              <span className="text-sm font-semibold tracking-wide">AI-Powered Study Planner</span>
-            </motion.div>
 
-            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[88px] leading-[1.05] font-extrabold tracking-tight text-text-dark mb-8">
+            <h1 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-[92px] leading-[0.95] font-extrabold tracking-tight text-text-dark mb-5 drop-shadow-sm">
               Study Smarter. <br className="hidden sm:block"/>
-              <span className="text-gradient-primary">Stress Less.</span>
+              <span className="relative inline-block mt-2">
+                <span className="absolute -inset-2 bg-accent-orange/20 blur-2xl rounded-full opacity-40 animate-pulse-glow"></span>
+                <span 
+                  className="relative bg-gradient-to-r from-accent-orange via-accent-purple to-accent-orange bg-[length:200%_auto] animate-text-shimmer bg-clip-text text-transparent drop-shadow-2xl"
+                  style={{ WebkitBackgroundClip: 'text' }}
+                >
+                  Stress Less.
+                </span>
+              </span>
             </h1>
 
-            <p className="text-lg md:text-xl text-text-muted leading-relaxed font-medium mb-10 max-w-xl">
+            <p className="text-lg md:text-xl text-text-muted leading-relaxed font-medium mb-8 max-w-xl">
               Studiplify helps students generate personalized AI study plans, manage tasks, track goals, and stay productive without the burnout.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-5">
-              <Link href="/auth/signup">
-                <button className="w-full sm:w-auto btn-primary text-lg px-8 py-4">
+              {mounted && (
+                <Link 
+                  href={isAuthenticated ? '/dashboard/study-plan' : '/auth/signup'} 
+                  className="w-full sm:w-auto btn-primary text-lg px-8 py-4 transition-transform active:scale-95 text-center flex items-center justify-center"
+                >
                   Create My Study Plan
-                </button>
-              </Link>
-              <Link href="#features">
-                <button className="w-full sm:w-auto btn-secondary text-lg px-8 py-4 flex items-center justify-center gap-3">
-                  <span className="material-symbols-outlined">play_circle</span>
-                  See How It Works
-                </button>
+                </Link>
+              )}
+
+              <Link 
+                href="#features"
+                className="w-full sm:w-auto btn-secondary text-lg px-8 py-4 flex items-center justify-center gap-3 transition-transform active:scale-95"
+              >
+                <span className="material-symbols-outlined">play_circle</span>
+                See How It Works
               </Link>
             </div>
 
@@ -214,8 +238,8 @@ export default function LandingPage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-10 lg:gap-12 items-stretch">
             {[
               { name: 'Free', price: '$0', desc: 'Perfect for getting started.', features: ['3 AI Study Plans/mo', 'Basic Task Management', 'Standard Focus Timer'], btn: 'Start Free', popular: false },
-              { name: 'Pro', price: '$9', desc: 'For serious high-achievers.', features: ['Unlimited AI Plans', 'Advanced Analytics', 'Custom Focus Scenes', 'Priority AI Support'], btn: 'Go Pro', popular: true },
-              { name: 'Team', price: '$19', desc: 'Collaborative study groups.', features: ['Everything in Pro', 'Shared Study Groups', 'Collaborative Tasks', 'Admin Dashboard'], btn: 'Start Team', popular: false }
+              { name: 'Pro', price: '$9', priceId: 'price_pro', desc: 'For serious high-achievers.', features: ['Unlimited AI Plans', 'Advanced Analytics', 'Custom Focus Scenes', 'Priority AI Support'], btn: 'Go Pro', popular: true },
+              { name: 'Team', price: '$19', priceId: 'price_team', desc: 'Collaborative study groups.', features: ['Everything in Pro', 'Shared Study Groups', 'Collaborative Tasks', 'Admin Dashboard'], btn: 'Start Team', popular: false }
             ].map((plan, i) => (
               <motion.div 
                 key={i}
@@ -242,10 +266,11 @@ export default function LandingPage() {
                     ))}
                   </ul>
                 </div>
-                <Link href="/auth/signup">
-                  <button className={`w-full py-5 rounded-full font-black text-[13px] uppercase tracking-widest transition-all ${plan.popular ? 'bg-accent-orange text-white shadow-glow-primary hover:scale-[1.02] active:scale-95' : 'bg-surface-dim text-text-dark hover:bg-border active:scale-95'}`}>
-                    {plan.btn}
-                  </button>
+                <Link 
+                  href={isAuthenticated ? '/dashboard' : '/auth/signup'}
+                  className={`w-full py-5 rounded-full font-black text-[13px] uppercase tracking-widest transition-all text-center ${plan.popular ? 'bg-accent-orange text-white shadow-glow-primary hover:scale-[1.02] active:scale-95' : 'bg-surface-dim text-text-dark hover:bg-border active:scale-95'}`}
+                >
+                  {plan.btn}
                 </Link>
               </motion.div>
             ))}
@@ -304,10 +329,11 @@ export default function LandingPage() {
             <p className="text-xl text-white/70 font-medium mb-14 max-w-2xl mx-auto leading-relaxed">
               Join thousands of students who are studying smarter, not harder. Initialize your protocol today.
             </p>
-            <Link href="/auth/signup">
-              <button className="bg-accent-orange text-white px-14 py-6 rounded-full font-black text-[16px] uppercase tracking-widest shadow-glow-primary hover:scale-105 active:scale-95 transition-all">
-                Get Started for Free
-              </button>
+            <Link 
+              href={isAuthenticated ? '/dashboard' : '/auth/signup'}
+              className="bg-accent-orange text-white px-14 py-6 rounded-full font-black text-[16px] uppercase tracking-widest shadow-glow-primary hover:scale-105 active:scale-95 transition-all text-center inline-block"
+            >
+              Get Started for Free
             </Link>
           </div>
         </div>

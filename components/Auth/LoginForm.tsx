@@ -20,7 +20,7 @@ export default function LoginForm() {
     const result = await signIn(formData);
 
     if (result.success) {
-      router.push('/dashboard');
+      router.push('/');
       router.refresh();
     } else {
       setError(result.error || 'Invalid email or password');

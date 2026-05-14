@@ -17,7 +17,7 @@ export async function middleware(req: NextRequest) {
 
   // If user is signed in and accessing auth routes
   if (session && (req.nextUrl.pathname.startsWith('/auth/login') || req.nextUrl.pathname.startsWith('/auth/signup'))) {
-    return NextResponse.redirect(new URL('/dashboard', req.url));
+    return NextResponse.redirect(new URL('/', req.url));
   }
 
   return res;

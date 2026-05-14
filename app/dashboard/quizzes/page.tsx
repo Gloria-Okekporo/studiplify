@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import QuizClient from "./QuizClient";
+import QuizClient from "@/components/Dashboard/QuizClient";
 import { getUserQuizzes } from "@/lib/actions/quizzes";
 
 export const metadata = {

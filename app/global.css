@@ -158,6 +158,14 @@
   animation: pulse-glow 4s ease-in-out infinite;
 }
 
+@keyframes text-shimmer {
+  to { background-position: -200% center; }
+}
+
+.animate-text-shimmer {
+  animation: text-shimmer 4s linear infinite;
+}
+
 /* Custom Scrollbar */
 ::-webkit-scrollbar {
   @apply w-1.5;

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import StudyPlansClient from "./StudyPlansClient";
+import StudyPlansClient from "@/components/Dashboard/StudyPlansClient";
 import { getStudyPlans } from "@/lib/actions/studyPlans";
 
 export default async function StudyPlanPage() {

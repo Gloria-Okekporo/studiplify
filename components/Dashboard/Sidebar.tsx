@@ -27,7 +27,7 @@ export default function DashboardSidebar({ user, onSignOut }: { user?: any, onSi
   return (
     <aside className="hidden lg:flex w-64 lg:w-72 bg-white border-r border-border/40 flex-col h-full z-30 shrink-0">
       <div className="p-8 pb-10">
-        <Link href="/dashboard" className="flex items-center gap-3 group">
+        <Link href="/" className="flex items-center gap-3 group">
           <div className="w-10 h-10 rounded-xl bg-accent-orange/10 flex items-center justify-center text-accent-orange group-hover:bg-accent-orange group-hover:text-white transition-all">
             <span className="material-symbols-outlined font-black text-[22px]">auto_awesome</span>
           </div>
@@ -72,17 +72,18 @@ export default function DashboardSidebar({ user, onSignOut }: { user?: any, onSi
       <div className="p-6 mt-auto border-t border-border/30">
         <div className="bg-surface-dim rounded-[2rem] p-4 flex items-center gap-4 mb-4 border border-border/20">
           <div className="w-12 h-12 rounded-full bg-white border border-border/40 flex items-center justify-center text-accent-orange font-black text-lg shadow-sm">
-            {user?.full_name?.charAt(0) || user?.email?.charAt(0).toUpperCase() || 'S'}
+            {(user?.full_name || user?.user_metadata?.full_name || user?.email || 'S').charAt(0).toUpperCase()}
           </div>
           <div className="flex-1 min-w-0">
             <h4 className="text-sm font-black text-text-dark truncate leading-none mb-1">
-              {user?.full_name || 'Student User'}
+              {user?.full_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Student User'}
             </h4>
             <span className="text-[10px] font-black text-accent-orange uppercase tracking-widest bg-accent-orange/10 px-2 py-0.5 rounded-full">
               PRO PLAN
             </span>
           </div>
         </div>
+
         
         <button 
           onClick={onSignOut}

@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation";
-import SummarizerClient from "./summarizerClient";
+import SummarizerClient from "@/components/Dashboard/SummarizerClient";
 import { getSummaries } from "@/lib/actions/summarizer"
 
 export default async function SummarizerPage() {

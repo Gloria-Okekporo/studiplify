@@ -5,12 +5,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { createTask, toggleTask, deleteTask } from '@/lib/actions/tasks';
 import { useToast } from '@/hooks/useToast';
 import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
+import DashboardSidebar from './Sidebar';
+import DashboardHeader from './Header';
+import MobileNav from './MobileNav';
+import { useAuth } from '@/hooks/useAuth';
+import { useRouter } from 'next/navigation';
+import { ToastContainer } from '@/components/Common/Toast';
 
 export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
   const [tasks, setTasks] = useState(initialTasks);
   const [newTaskTitle, setNewTaskTitle] = useState('');
   const [isAdding, setIsAdding] = useState(false);
-  const { showToast } = useToast();
+  const { showToast, toasts, removeToast } = useToast();
+  const { user, logout } = useAuth();
+  const router = useRouter();
   const supabase = createClientComponentClient();
 
   const handleAddTask = async (e: React.FormEvent) => {
@@ -22,7 +30,10 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
       const res = await createTask(newTaskTitle);
       if (res.success) {
         setNewTaskTitle('');
+        // We'll let the revalidatePath/refresh handle the state or manually add it
+        // For a snappier feel, we could manually add it to state here too
         showToast("Task synchronized.", "success");
+        router.refresh();
       }
     } catch (error) {
       showToast("Failed to add task.", "error");
@@ -38,6 +49,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
     try {
       await toggleTask(id, !completed);
       if (!completed) showToast("Goal achieved!", "success");
+      router.refresh();
     } catch (error) {
       showToast("Failed to sync state.", "error");
       // Rollback if error
@@ -49,111 +61,140 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
     setTasks(prev => prev.filter(t => t.id !== id));
     try {
       await deleteTask(id);
+      showToast("Task archived.", "info");
+      router.refresh();
     } catch (error) {
       showToast("Failed to archive task.", "error");
     }
   };
 
-  useEffect(() => {
-    const channel = supabase
-      .channel('realtime-tasks')
-      .on('postgres_changes', { 
-        event: '*', 
-        schema: 'public', 
-        table: 'tasks' 
-      }, async () => {
-        // Simple re-fetch or manual update if needed
-      })
-      .subscribe();
+  const handleSignOut = async () => {
+    await logout();
+    router.push('/auth/login');
+  };
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
+  useEffect(() => {
+    setTasks(initialTasks);
+  }, [initialTasks]);
 
   return (
-    <div className="w-full space-y-8">
-      {/* Quick Add Interface */}
-      <form onSubmit={handleAddTask} className="relative group">
-        <div className="absolute inset-0 bg-accent-orange/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
-        <input 
-          type="text"
-          value={newTaskTitle}
-          onChange={(e) => setNewTaskTitle(e.target.value)}
-          placeholder="Deploy a new study milestone..."
-          className="w-full h-16 bg-white/60 backdrop-blur-xl border border-white/80 rounded-2xl px-8 pr-32 font-medium text-lg focus:ring-2 focus:ring-accent-orange/20 outline-none transition-all shadow-soft relative z-10"
-        />
-        <button 
-          type="submit"
-          disabled={isAdding || !newTaskTitle.trim()}
-          className="absolute right-3 top-3 bottom-3 px-6 bg-accent-orange text-white rounded-xl font-black text-[11px] uppercase tracking-widest shadow-glow-primary hover:scale-105 active:scale-95 transition-all z-20 disabled:opacity-50"
-        >
-          {isAdding ? 'Syncing...' : 'Add Task'}
-        </button>
-      </form>
+    <div className="flex h-screen bg-background text-text-dark font-body selection:bg-accent-orange/30 selection:text-text-dark overflow-hidden">
+      
+      <DashboardSidebar user={user} onSignOut={handleSignOut} />
 
-      {/* Tasks List */}
-      <div className="space-y-3">
-        <AnimatePresence mode="popLayout">
-          {tasks.map((task) => (
-            <motion.div 
-              key={task.id}
-              layout
-              initial={{ opacity: 0, x: -10 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className={`group flex items-center gap-4 p-5 rounded-[1.8rem] border transition-all ${
-                task.completed ? 'bg-surface-dim/40 border-transparent' : 'bg-white border-border/40 hover:border-accent-orange/30 shadow-sm'
-              }`}
-            >
-              <button 
-                onClick={() => handleToggle(task.id, task.completed)}
-                className={`shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-all ${
-                  task.completed 
-                    ? 'bg-accent-orange border-accent-orange text-white' 
-                    : 'border-border/40 hover:border-accent-orange text-transparent'
-                }`}
-              >
-                <span className="material-symbols-outlined text-[16px] font-black">check</span>
-              </button>
+      <main className="flex-1 flex flex-col h-full overflow-hidden relative bg-background">
+        
+        <DashboardHeader title="Tasks & Milestones" badge={`${tasks.filter(t => !t.completed).length} Pending`} />
 
-              <div className="flex-1 min-w-0">
-                <span className={`text-[15px] font-bold block truncate transition-all ${
-                  task.completed ? 'text-text-muted/50 line-through' : 'text-text-dark'
-                }`}>
-                  {task.title}
-                </span>
-                <div className="flex items-center gap-3 mt-1">
-                  <span className={`text-[9px] font-black uppercase tracking-widest ${
-                    task.priority === 'Urgent' ? 'text-red-500' :
-                    task.priority === 'High' ? 'text-accent-orange' : 'text-text-muted/60'
-                  }`}>
-                    {task.priority} Priority
-                  </span>
-                  {task.due_date && (
-                    <span className="text-[9px] font-black text-text-muted/40 uppercase tracking-widest">
-                      Due {new Date(task.due_date).toLocaleDateString()}
-                    </span>
-                  )}
-                </div>
+        <div className="flex-1 overflow-y-auto hide-scrollbar">
+          <div className="max-w-[1000px] mx-auto px-8 lg:px-12 py-12 space-y-12 pb-32">
+            
+            {/* Header section */}
+            <div className="space-y-4">
+              <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-accent-orange/10 text-accent-orange rounded-full text-[11px] font-black uppercase tracking-widest border border-accent-orange/20">
+                <span className="material-symbols-outlined text-[16px] font-bold">assignment_turned_in</span>
+                Execution Flow
               </div>
+              <h2 className="text-4xl font-black text-text-dark tracking-tighter leading-none">
+                Task Management
+              </h2>
+              <p className="text-lg font-medium text-text-muted opacity-80 max-w-xl">
+                Break down your academic goals into actionable steps and track your progress in real-time.
+              </p>
+            </div>
 
+            {/* Quick Add Interface */}
+            <form onSubmit={handleAddTask} className="relative group">
+              <div className="absolute inset-0 bg-accent-orange/5 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity" />
+              <input 
+                type="text"
+                value={newTaskTitle}
+                onChange={(e) => setNewTaskTitle(e.target.value)}
+                placeholder="Deploy a new study milestone..."
+                className="w-full h-20 bg-white border border-border/40 rounded-[2rem] px-8 pr-40 font-medium text-lg focus:ring-4 focus:ring-accent-orange/5 focus:border-accent-orange outline-none transition-all shadow-soft relative z-10"
+              />
               <button 
-                onClick={() => handleDelete(task.id)}
-                className="opacity-0 group-hover:opacity-40 hover:opacity-100 w-10 h-10 rounded-xl flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-all"
+                type="submit"
+                disabled={isAdding || !newTaskTitle.trim()}
+                className="absolute right-3 top-3 bottom-3 px-8 bg-accent-orange text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 active:scale-95 transition-all z-20 disabled:opacity-50"
               >
-                <span className="material-symbols-outlined text-[20px]">delete</span>
+                {isAdding ? 'Syncing...' : 'Add Milestone'}
               </button>
-            </motion.div>
-          ))}
-        </AnimatePresence>
+            </form>
 
-        {tasks.length === 0 && (
-          <div className="text-center py-12 bg-surface-dim/30 rounded-[2.5rem] border border-dashed border-border/40">
-            <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] opacity-30">Clear for Deployment</p>
+            {/* Tasks List */}
+            <div className="space-y-4">
+              <AnimatePresence mode="popLayout">
+                {tasks.map((task) => (
+                  <motion.div 
+                    key={task.id}
+                    layout
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className={`group flex items-center gap-6 p-6 rounded-[2.5rem] border transition-all ${
+                      task.completed ? 'bg-surface-dim/40 border-transparent' : 'bg-white border-border/40 hover:border-accent-orange/30 shadow-sm'
+                    }`}
+                  >
+                    <button 
+                      onClick={() => handleToggle(task.id, task.completed)}
+                      className={`shrink-0 w-10 h-10 rounded-2xl border-2 flex items-center justify-center transition-all ${
+                        task.completed 
+                          ? 'bg-accent-orange border-accent-orange text-white' 
+                          : 'bg-white border-border/40 hover:border-accent-orange text-transparent'
+                      }`}
+                    >
+                      <span className="material-symbols-outlined text-[20px] font-black">check</span>
+                    </button>
+
+                    <div className="flex-1 min-w-0">
+                      <span className={`text-lg font-bold block truncate transition-all ${
+                        task.completed ? 'text-text-muted/50 line-through' : 'text-text-dark'
+                      }`}>
+                        {task.title}
+                      </span>
+                      <div className="flex items-center gap-4 mt-1.5">
+                        <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded-md ${
+                          task.priority === 'Urgent' ? 'bg-red-50 text-red-500' :
+                          task.priority === 'High' ? 'bg-accent-orange/10 text-accent-orange' : 'bg-surface-dim text-text-muted/60'
+                        }`}>
+                          {task.priority}
+                        </span>
+                        {task.due_date && (
+                          <span className="text-[10px] font-black text-text-muted/40 uppercase tracking-widest flex items-center gap-1">
+                            <span className="material-symbols-outlined text-[14px]">calendar_today</span>
+                            {new Date(task.due_date).toLocaleDateString()}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <button 
+                      onClick={() => handleDelete(task.id)}
+                      className="opacity-0 group-hover:opacity-40 hover:opacity-100 w-12 h-12 rounded-2xl flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-all"
+                    >
+                      <span className="material-symbols-outlined text-[22px]">delete</span>
+                    </button>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+
+              {tasks.length === 0 && (
+                <div className="text-center py-24 bg-surface-dim/30 rounded-[3.5rem] border border-dashed border-border/40">
+                  <div className="w-16 h-16 bg-white rounded-2xl flex items-center justify-center mx-auto mb-6 text-text-muted/20">
+                    <span className="material-symbols-outlined text-[32px]">task_alt</span>
+                  </div>
+                  <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.4em] opacity-30">Zero Tasks Pending</p>
+                </div>
+              )}
+            </div>
           </div>
-        )}
-      </div>
+        </div>
+
+        <MobileNav />
+        <ToastContainer toasts={toasts} onRemove={removeToast} />
+      </main>
     </div>
   );
 }
+
