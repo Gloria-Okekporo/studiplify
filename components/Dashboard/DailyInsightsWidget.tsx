@@ -10,7 +10,6 @@ export default function DailyInsightsWidget({ initialInsight = null }: { initial
   const [insight, setInsight] = useState<any>(initialInsight);
   const [loading, setLoading] = useState(!initialInsight);
   const [isGenerating, setIsGenerating] = useState(false);
-  const [dbError, setDbError] = useState<string | null>(null);
   const supabase = createClientComponentClient();
   const { showToast } = useToast();
 
@@ -19,8 +18,6 @@ export default function DailyInsightsWidget({ initialInsight = null }: { initial
     const res = await getLatestPersonalizedInsight();
     if (res.success) {
       setInsight(res.data);
-    } else {
-      setDbError(res.message || 'Connection failed');
     }
     setLoading(false);
   };

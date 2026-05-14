@@ -16,7 +16,7 @@ export async function checkRateLimit(actionName: string, maxPerDay: number = 20)
   
   if (actionName === 'ai_insight') {
     const { count: insightCount } = await supabase
-      .from('ai_insights')
+      .from('daily_ai_insights')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
       .gte('created_at', today);

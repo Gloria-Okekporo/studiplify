@@ -26,17 +26,40 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
     if (!newTaskTitle.trim()) return;
 
     setIsAdding(true);
+    
+    // Optimistic Update
+    const optimisticTask = {
+      id: crypto.randomUUID(),
+      title: newTaskTitle,
+      completed: false,
+      priority: 'Medium',
+      created_at: new Date().toISOString()
+    };
+    
+    setTasks(prev => [optimisticTask, ...prev]);
+    const previousTitle = newTaskTitle;
+    setNewTaskTitle('');
+
     try {
-      const res = await createTask(newTaskTitle);
+      const res = await createTask(previousTitle);
       if (res.success) {
-        setNewTaskTitle('');
-        // We'll let the revalidatePath/refresh handle the state or manually add it
-        // For a snappier feel, we could manually add it to state here too
+        // Replace optimistic task with real data
+        if (res.data) {
+          setTasks(prev => prev.map(t => t.id === optimisticTask.id ? res.data : t));
+        }
         showToast("Task synchronized.", "success");
         router.refresh();
+      } else {
+        // Rollback on failure
+        setTasks(prev => prev.filter(t => t.id !== optimisticTask.id));
+        setNewTaskTitle(previousTitle);
+        showToast(res.error || "Failed to add task.", "error");
       }
-    } catch (error) {
-      showToast("Failed to add task.", "error");
+    } catch (error: any) {
+      // Rollback on exception
+      setTasks(prev => prev.filter(t => t.id !== optimisticTask.id));
+      setNewTaskTitle(previousTitle);
+      showToast("An unexpected error occurred.", "error");
     } finally {
       setIsAdding(false);
     }

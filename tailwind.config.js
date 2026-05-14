@@ -53,6 +53,7 @@ module.exports = {
         'soft-xl': '0 20px 50px -12px rgba(0, 0, 0, 0.12), 0 30px 30px -15px rgba(0, 0, 0, 0.05)',
         'soft-2xl': '0 25px 80px -20px rgba(0, 0, 0, 0.15)',
         'glow-orange': '0 8px 25px -5px rgba(255, 138, 76, 0.4)',
+        'glow-primary': '0 8px 25px -5px rgba(255, 138, 76, 0.4)',
         'glow-purple': '0 8px 25px -5px rgba(185, 167, 255, 0.4)',
         'glow-green': '0 8px 25px -5px rgba(76, 175, 132, 0.4)',
       }

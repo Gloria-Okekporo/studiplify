@@ -101,13 +101,28 @@ export default function DashboardClient({
     if (!newTaskTitle.trim()) return;
 
     setIsCreatingTask(true);
+    
+    // Optimistic Update
+    const optimisticTask = {
+      id: crypto.randomUUID(),
+      title: newTaskTitle,
+      user_id: user.id,
+      completed: false,
+      priority: 'Medium',
+      created_at: new Date().toISOString()
+    };
+    
+    setTasks(prev => [optimisticTask, ...prev]);
+    const previousTitle = newTaskTitle;
+    setNewTaskTitle('');
+
     try {
       const { data, error } = await supabase
         .from('tasks')
         .insert([{ 
-          title: newTaskTitle, 
+          title: previousTitle, 
           user_id: user.id,
-          status: 'pending',
+          completed: false,
           priority: 'Medium'
         }])
         .select();
@@ -115,11 +130,14 @@ export default function DashboardClient({
       if (error) throw error;
 
       if (data && data[0]) {
-        setTasks([data[0], ...tasks]);
-        setNewTaskTitle('');
+        // Replace optimistic task with real data to get the real ID
+        setTasks(prev => prev.map(t => t.id === optimisticTask.id ? data[0] : t));
         showToast("Task captured in your neural flow.", "success");
       }
     } catch (error: any) {
+      // Rollback
+      setTasks(prev => prev.filter(t => t.id !== optimisticTask.id));
+      setNewTaskTitle(previousTitle);
       showToast(error.message, "error");
     } finally {
       setIsCreatingTask(false);

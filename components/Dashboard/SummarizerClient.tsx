@@ -17,7 +17,6 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Use a ref to track if we've already synced the initial load
-  const hasSyncedInitial = useRef(false);
   const [summaries, setSummaries] = useState<any[]>([]);
   const [isUploading, setIsUploading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -25,17 +24,9 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
 
   // 1. Initialize state from props
   useEffect(() => {
-    if (initialSummaries) {
+    if (initialSummaries && Array.isArray(initialSummaries)) {
       console.log('[SummarizerClient] Received initialSummaries:', initialSummaries.length);
-      setSummaries(prev => {
-        // Simple merge: take all from server, plus anything we have locally that isn't in server yet
-        const serverIds = new Set(initialSummaries.map(s => s.id));
-        const localOnly = prev.filter(s => !serverIds.has(s.id));
-        const combined = [...initialSummaries, ...localOnly].sort((a, b) =>
-          new Date(b.created_at || Date.now()).getTime() - new Date(a.created_at || Date.now()).getTime()
-        );
-        return combined;
-      });
+      setSummaries(initialSummaries);
     }
   }, [initialSummaries]);
 
@@ -79,6 +70,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
             return [docToInsert, ...prev];
           });
           showToast("Intelligence extraction complete!", "success");
+          router.refresh();
         } else {
           console.warn(`[SummarizerClient] [${new Date().toISOString()}] Success response but missing/invalid data object. Refetching...`);
           await refreshSummaries();

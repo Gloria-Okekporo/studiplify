@@ -17,7 +17,25 @@ export async function generatePersonalizedAIInsight(providedUserId?: string) {
   }
 
   try {
-    // 1. Production Rate Limiting (only for web triggers, skip for automation)
+    // 1. Ensure profile exists (safety check for FK constraint)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!profile) {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from('profiles').insert([{
+          id: user.id,
+          email: user.email,
+          full_name: user.user_metadata?.full_name || 'Student User'
+        }]);
+      }
+    }
+
+    // 2. Production Rate Limiting (only for web triggers, skip for automation)
     if (!providedUserId) {
       const limitCheck = await checkRateLimit('ai_insight', 10);
       if (!limitCheck.allowed) {
@@ -28,7 +46,7 @@ export async function generatePersonalizedAIInsight(providedUserId?: string) {
     const now = new Date();
     const sevenDaysAgo = new Date(now.getTime() - (7 * 24 * 60 * 60 * 1000)).toISOString();
 
-    // 2. Optimized Data Fetching
+    // 3. Optimized Data Fetching
     const [tasksRes, sessionsRes, quizzesRes, analyticsRes, plansRes] = await Promise.all([
       supabase.from('tasks').select('id, status').eq('user_id', userId),
       supabase.from('focus_sessions').select('duration_minutes').eq('user_id', userId).gte('created_at', sevenDaysAgo),
@@ -60,7 +78,7 @@ export async function generatePersonalizedAIInsight(providedUserId?: string) {
       } else if (i > 0) break;
     }
 
-    // 3. Robust AI Analysis
+    // 4. Robust AI Analysis
     const apiKey = process.env.GEMINI_API_KEY;
     if (!apiKey) throw new Error('AI Configuration Missing');
 
@@ -80,9 +98,10 @@ export async function generatePersonalizedAIInsight(providedUserId?: string) {
       "consistency_feedback": "Feedback on their streak and study habits.",
       "insight_type": "focus|knowledge|productivity",
       "title": "A short catchy title for today"
-    }`;
+    }
+    Return ONLY the JSON object.`;
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`, {
+    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
@@ -95,24 +114,38 @@ export async function generatePersonalizedAIInsight(providedUserId?: string) {
     }
 
     const responseData = await res.json();
-    const aiText = responseData.candidates[0].content.parts[0].text.replace(/```json/g, '').replace(/```/g, '').trim();
+    const rawText = responseData.candidates?.[0]?.content?.parts?.[0]?.text;
+    if (!rawText) throw new Error("AI failed to generate insights.");
+
+    const aiText = rawText.replace(/```json/g, '').replace(/```/g, '').trim();
     const aiPayload = JSON.parse(aiText);
 
-    // 4. Atomic Database Insert
-    // We'll store the whole JSON in the 'insight' column as requested by the user
+    // 5. Atomic Database Insert (Defensive for different schema versions)
+    const insertPayload: any = {
+      user_id: userId,
+      insight: aiPayload, // Supabase handles object to JSONB conversion
+    };
+
+    // If the schema requires title and insight as TEXT (as in schema.sql)
+    // we'll add these fields just in case they exist
+    insertPayload.title = aiPayload.title || 'Daily Insight';
+    insertPayload.insight_type = aiPayload.insight_type || 'productivity';
+    
+    // Some schemas might have 'insight' as TEXT, so we ensure it works
+    // but the widget expects it to be an object, so we prioritize that.
+
     const { data: savedInsight, error: saveError } = await supabase
       .from('daily_ai_insights')
-      .insert([{
-        user_id: userId,
-        insight: aiPayload
-      }])
-      .select()
-      .single();
+      .insert([insertPayload])
+      .select();
 
-    if (saveError) throw saveError;
+    if (saveError || !savedInsight || savedInsight.length === 0) {
+      console.error('Insight Save Error:', saveError);
+      throw saveError || new Error("Failed to save insight.");
+    }
 
     if (!providedUserId) revalidatePath('/dashboard');
-    return { success: true, data: savedInsight };
+    return { success: true, data: savedInsight[0] };
 
   } catch (error: any) {
     console.error('Insight Generation Error:', error);

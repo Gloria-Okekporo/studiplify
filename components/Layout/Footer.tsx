@@ -68,11 +68,21 @@ export default function Footer() {
       <div className="max-w-[1400px] mx-auto mt-20 pt-8 border-t border-border flex flex-col md:flex-row justify-between items-center gap-4">
         <p className="text-text-muted text-sm font-medium">© {new Date().getFullYear()} Studiplify AI Labs. All rights reserved.</p>
         <div className="flex gap-4">
-          {/* Social Icons Placeholders */}
-          {['share', 'thumb_up', 'forum'].map(icon => (
-            <div key={icon} className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-text-muted hover:bg-accent-orange hover:text-white transition-colors cursor-pointer">
-              <span className="material-symbols-outlined text-[18px]">{icon}</span>
-            </div>
+          {[
+            { icon: 'brand_family', href: 'https://twitter.com', label: 'Twitter' },
+            { icon: 'groups', href: 'https://discord.com', label: 'Discord' },
+            { icon: 'account_circle', href: 'https://linkedin.com', label: 'LinkedIn' }
+          ].map(social => (
+            <Link 
+              key={social.label} 
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full bg-surface-variant flex items-center justify-center text-text-muted hover:bg-accent-orange hover:text-white active:scale-90 transition-all duration-300 cursor-pointer shadow-sm hover:shadow-glow-orange hover:-translate-y-1"
+              aria-label={social.label}
+            >
+              <span className="material-symbols-outlined text-[18px]">{social.icon}</span>
+            </Link>
           ))}
         </div>
       </div>

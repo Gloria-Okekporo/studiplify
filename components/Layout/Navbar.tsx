@@ -23,8 +23,8 @@ export default function Navbar() {
   // Navigation Links definition
   const navLinks = [
     { name: 'Features', href: '/#features' },
-    { name: 'Dashboard', href: '/dashboard' },
     { name: 'Pricing', href: '/#pricing' },
+    { name: 'Dashboard', href: '/dashboard' },
     { name: 'About', href: '/about' },
     { name: 'Contact', href: '/contact' }
   ];
@@ -76,7 +76,7 @@ export default function Navbar() {
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.05 }}
-                  className={`relative px-5 py-2.5 rounded-full text-[13px] font-bold tracking-tight transition-all duration-300 group ${
+                  className={`relative px-5 py-2.5 rounded-full text-[13px] font-bold tracking-tight transition-all duration-300 group active:scale-95 ${
                     isActive ? "text-accent-orange" : "text-text-muted hover:text-text-dark"
                   }`}
                 >
@@ -114,7 +114,7 @@ export default function Navbar() {
               <div className="flex items-center gap-2 md:gap-4">
                 <Link 
                   href="/auth/login"
-                  className="hidden sm:flex items-center h-11 px-6 text-[13px] font-black text-text-dark/60 hover:text-accent-orange uppercase tracking-widest transition-colors"
+                  className="hidden sm:flex items-center h-11 px-6 text-[13px] font-black text-text-dark/60 hover:text-accent-orange uppercase tracking-widest transition-colors active:scale-95"
                 >
                   Sign In
                 </Link>
@@ -131,7 +131,7 @@ export default function Navbar() {
           {/* Mobile Menu Toggle */}
           <button 
             onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center bg-surface-dim hover:bg-accent-orange/10 hover:text-accent-orange transition-all border border-border/40"
+            className="lg:hidden w-10 h-10 rounded-full flex items-center justify-center bg-surface-dim hover:bg-accent-orange/10 hover:text-accent-orange active:scale-90 transition-all border border-border/40"
           >
             <span className="material-symbols-outlined text-[24px] font-black">
               {isOpen ? 'close' : 'menu'}
@@ -141,8 +141,9 @@ export default function Navbar() {
       </div>
 
       {/* Mobile Menu Overlay */}
-      <AnimatePresence>
-        {isOpen && (
+      {mounted && (
+        <AnimatePresence>
+          {isOpen && (
           <motion.div
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
@@ -157,7 +158,7 @@ export default function Navbar() {
                   key={item.name} 
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent-orange/5 text-text-dark font-bold transition-all group"
+                  className="flex items-center justify-between p-4 rounded-2xl hover:bg-accent-orange/5 text-text-dark font-bold transition-all group active:scale-[0.98]"
                 >
                   {item.name}
                   <span className="material-symbols-outlined text-[18px] opacity-0 group-hover:opacity-100 transition-opacity">arrow_forward</span>
@@ -204,6 +205,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      )}
     </nav>
   );
 }

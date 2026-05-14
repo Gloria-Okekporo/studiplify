@@ -13,6 +13,7 @@ interface NavItem {
 
 const navItems: NavItem[] = [
   { icon: 'grid_view', label: 'Dashboard', href: '/dashboard' },
+  { icon: 'assignment_turned_in', label: 'Tasks & Milestones', href: '/dashboard/tasks' },
   { icon: 'schedule', label: 'Focus Hub', href: '/dashboard/focus' },
   { icon: 'military_tech', label: 'Rank & Progress', href: '/dashboard/rank' },
   { icon: 'event_note', label: 'Study Plans', href: '/dashboard/study-plan' },

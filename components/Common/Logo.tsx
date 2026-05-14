@@ -29,7 +29,7 @@ export default function Logo({
       
       {/* Icon Container with subtle continuous floating */}
       <motion.div 
-        className={`relative flex items-center justify-center bg-accent-orange/10 border border-accent-orange/20 group-hover:bg-accent-orange group-hover:text-white transition-all duration-300 z-10 ${iconContainerSize}`}
+        className={`relative flex items-center justify-center bg-accent-orange/10 border-2 border-accent-orange/30 group-hover:bg-accent-orange group-hover:text-white transition-all duration-300 z-10 ${iconContainerSize}`}
         animate={shouldReduceMotion ? {} : { 
           y: [-1, 1, -1]
         }}
@@ -47,7 +47,7 @@ export default function Logo({
       </motion.div>
 
       {/* Stable Text */}
-      <div className={`font-display font-extrabold text-text-dark tracking-tight relative z-10 ${textSize}`}>
+      <div className={`font-display font-black text-text-dark tracking-tighter relative z-10 ${textSize}`}>
         Studiplify<span className="text-accent-orange">.</span>
       </div>
     </Link>

@@ -1,29 +1,53 @@
 'use server';
 
-import { createActionSupabaseClient } from '../supabase-server';
+import { createActionSupabaseClient, createServerSupabaseClient } from '../supabase-server';
 import { revalidatePath } from 'next/cache';
 
 export async function createTask(title: string, priority: string = 'Medium', dueDate?: string) {
-  const supabase = createActionSupabaseClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  
-  if (!session) throw new Error('Unauthorized');
+  try {
+    const supabase = createActionSupabaseClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session) return { success: false, error: 'Unauthorized' };
 
-  const { data, error } = await supabase
-    .from('tasks')
-    .insert([{
-      user_id: session.user.id,
-      title,
-      priority,
-      due_date: dueDate || null,
-      completed: false
-    }])
-    .select()
-    .single();
+    // Ensure profile exists (safety check for FK constraint)
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('id')
+      .eq('id', session.user.id)
+      .single();
 
-  if (error) throw error;
-  revalidatePath('/dashboard');
-  return { success: true, data };
+    if (!profile) {
+      await supabase.from('profiles').insert([{
+        id: session.user.id,
+        email: session.user.email,
+        full_name: session.user.user_metadata?.full_name || 'Student User'
+      }]);
+    }
+
+    const { data, error } = await supabase
+      .from('tasks')
+      .insert([{
+        user_id: session.user.id,
+        title,
+        priority,
+        due_date: dueDate || null,
+        completed: false,
+        status: 'pending'
+      }])
+      .select();
+
+    if (error) {
+      console.error('Supabase Error:', error);
+      return { success: false, error: error.message };
+    }
+
+    revalidatePath('/dashboard');
+    return { success: true, data: data?.[0] };
+  } catch (error: any) {
+    console.error('Action Error:', error);
+    return { success: false, error: error.message };
+  }
 }
 
 export async function toggleTask(taskId: string, completed: boolean) {
@@ -67,6 +91,7 @@ export async function toggleTask(taskId: string, completed: boolean) {
     }
   }
 
+  revalidatePath('/dashboard/tasks');
   revalidatePath('/dashboard');
   return { success: true };
 }
@@ -83,12 +108,13 @@ export async function deleteTask(taskId: string) {
     .eq('user_id', session.user.id);
 
   if (error) throw error;
+  revalidatePath('/dashboard/tasks');
   revalidatePath('/dashboard');
   return { success: true };
 }
 
 export async function getTasks() {
-  const supabase = createActionSupabaseClient();
+  const supabase = createServerSupabaseClient();
   try {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { success: false, error: 'Unauthorized' };
