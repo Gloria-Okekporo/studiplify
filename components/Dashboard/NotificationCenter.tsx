@@ -92,7 +92,9 @@ export default function NotificationCenter() {
         </AnimatePresence>
 
         {/* Notification Toggle Button */}
-        <button 
+        <motion.button 
+          whileHover={{ scale: 1.1, rotate: 5 }}
+          whileTap={{ scale: 0.9 }}
           onClick={() => setIsOpen(!isOpen)}
           className="w-11 h-11 rounded-full bg-white border border-border/50 flex items-center justify-center text-text-muted hover:text-accent-orange hover:border-accent-orange/30 shadow-sm transition-all relative"
         >
@@ -102,7 +104,7 @@ export default function NotificationCenter() {
               {unreadCount}
             </span>
           )}
-        </button>
+        </motion.button>
       </div>
 
       {/* Notification Dropdown */}
@@ -144,8 +146,10 @@ export default function NotificationCenter() {
                       key={reminder.id}
                       initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
+                      whileHover={{ x: 5, backgroundColor: 'rgba(255, 138, 76, 0.04)' }}
+                      whileTap={{ scale: 0.99 }}
                       transition={{ delay: i * 0.05 }}
-                      className={`group flex gap-4 p-5 rounded-[1.5rem] hover:bg-surface-dim border border-transparent hover:border-border/40 transition-all cursor-pointer relative ${!reminder.is_read ? 'bg-accent-orange/[0.02]' : ''}`}
+                      className={`group flex gap-4 p-5 rounded-[1.5rem] border border-transparent hover:border-border/40 transition-all cursor-pointer relative ${!reminder.is_read ? 'bg-accent-orange/[0.02]' : ''}`}
                     >
                       <div className={`w-12 h-12 rounded-xl shrink-0 flex items-center justify-center ${getTypeColor(reminder.type)}`}>
                         <span className="material-symbols-outlined text-[24px] font-bold">

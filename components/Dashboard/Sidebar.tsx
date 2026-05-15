@@ -48,22 +48,28 @@ export default function DashboardSidebar({ user, onSignOut }: { user?: any, onSi
               <Link
                 key={item.href}
                 href={item.href}
-                className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative ${
-                  isActive 
-                    ? 'bg-accent-orange text-white shadow-glow-orange' 
-                    : 'text-text-muted hover:text-text-dark hover:bg-surface-dim'
-                }`}
+                className="block"
               >
-                <span className={`material-symbols-outlined text-[24px] ${isActive ? 'font-bold' : 'group-hover:scale-110'}`}>
-                  {item.icon}
-                </span>
-                <span className="font-bold text-[15px] tracking-tight">{item.label}</span>
-                {isActive && (
-                  <motion.div 
-                    layoutId="sidebar-active"
-                    className="absolute -right-1 w-1 h-8 bg-accent-orange rounded-full"
-                  />
-                )}
+                <motion.div
+                  whileHover={{ x: 4 }}
+                  whileTap={{ scale: 0.98 }}
+                  className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl transition-all duration-200 group relative ${
+                    isActive 
+                      ? 'bg-accent-orange text-white shadow-glow-orange' 
+                      : 'text-text-muted hover:text-text-dark hover:bg-surface-dim'
+                  }`}
+                >
+                  <span className={`material-symbols-outlined text-[24px] ${isActive ? 'font-bold' : 'group-hover:scale-110'} transition-transform`}>
+                    {item.icon}
+                  </span>
+                  <span className="font-bold text-[15px] tracking-tight">{item.label}</span>
+                  {isActive && (
+                    <motion.div 
+                      layoutId="sidebar-active"
+                      className="absolute -right-1 w-1 h-8 bg-accent-orange rounded-full"
+                    />
+                  )}
+                </motion.div>
               </Link>
             );
           })}
@@ -86,13 +92,15 @@ export default function DashboardSidebar({ user, onSignOut }: { user?: any, onSi
         </div>
 
         
-        <button 
+        <motion.button 
+          whileHover={{ x: 4 }}
+          whileTap={{ scale: 0.98 }}
           onClick={onSignOut}
           className="w-full flex items-center gap-4 px-4 py-3 rounded-xl text-text-muted hover:text-red-500 hover:bg-red-50 transition-all group"
         >
           <span className="material-symbols-outlined text-[22px] group-hover:translate-x-1 transition-transform">logout</span>
           <span className="font-bold text-sm">Sign Out</span>
-        </button>
+        </motion.button>
       </div>
     </aside>
   );

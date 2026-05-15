@@ -249,13 +249,15 @@ export default function DashboardClient({
                     className="w-full h-16 bg-white border border-border/60 rounded-full pl-8 pr-32 font-medium text-text-dark shadow-sm focus:border-accent-orange focus:ring-4 focus:ring-accent-orange/5 outline-none transition-all"
                     disabled={isCreatingTask}
                   />
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     type="submit" 
                     disabled={isCreatingTask || !newTaskTitle.trim()} 
-                    className="absolute right-2 top-2 bottom-2 bg-accent-orange text-white px-8 rounded-full font-black text-sm uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 transition-all active:scale-95 disabled:opacity-50"
+                    className="absolute right-2 top-2 bottom-2 bg-accent-orange text-white px-8 rounded-full font-black text-sm uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 transition-all disabled:opacity-50"
                   >
                     {isCreatingTask ? '...' : 'Add'}
-                  </button>
+                  </motion.button>
                 </form>
               </div>
 
@@ -351,9 +353,11 @@ export default function DashboardClient({
                   </div>
 
                   <div className="flex flex-col gap-3">
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
                       onClick={() => setIsActive(!isActive)}
-                      className={`w-full h-16 rounded-full font-black text-sm uppercase tracking-widest transition-all active:scale-95 shadow-md flex items-center justify-center gap-3 ${
+                      className={`w-full h-16 rounded-full font-black text-sm uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-3 ${
                         isActive 
                           ? 'bg-white border-2 border-accent-orange text-accent-orange' 
                           : 'bg-accent-orange text-white shadow-glow-orange hover:bg-accent-orange/90'
@@ -361,15 +365,17 @@ export default function DashboardClient({
                     >
                       <span className="material-symbols-outlined font-black">{isActive ? 'pause_circle' : 'play_circle'}</span>
                       {isActive ? 'Pause Session' : 'Start Focus'}
-                    </button>
+                    </motion.button>
                     
                     {timeLeft < 1500 && (
-                      <button 
+                      <motion.button 
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         onClick={handleFinishFocus}
                         className="w-full h-12 text-xs font-black text-text-muted uppercase tracking-widest hover:text-text-dark transition-colors"
                       >
                         Finish & Log Time
-                      </button>
+                      </motion.button>
                     )}
                   </div>
                 </div>

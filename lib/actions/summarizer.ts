@@ -2,7 +2,6 @@
 
 import { createActionSupabaseClient, createServerSupabaseClient } from '../supabase-server';
 import { revalidatePath } from 'next/cache';
-const pdf = require('pdf-parse');
 import mammoth from 'mammoth';
 
 /**
@@ -30,7 +29,7 @@ async function uploadDocument(supabase: any, userId: string, file: File) {
 
   const { data, error } = await supabase.storage
     .from('summaries')
-    .upload(fileName, buffer, { contentType: file.type, upsert: true });
+    .upload(fileName, arrayBuffer, { contentType: file.type || 'application/octet-stream', upsert: true });
 
   if (error) {
     console.error('[Summarizer] Storage upload failed. Check RLS policies for bucket "summaries".', error);
@@ -60,18 +59,29 @@ async function generateSummary(text: string) {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 25000); // 25s timeout
 
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] }),
-      signal: controller.signal
-    });
-    
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [{ text: prompt }]
+            }
+          ]
+        }),
+        signal: controller.signal
+      }
+    );
+
     clearTimeout(timeoutId);
-    
-    if (!res.ok) throw new Error(`Gemini API Error: ${res.status}`);
-    
-    const data = await res.json();
+
+    if (!response.ok) throw new Error(`Gemini API Error: ${response.status}`);
+
+    const data = await response.json();
     return data.candidates?.[0]?.content?.parts?.[0]?.text || "No summary generated.";
   } catch (error: any) {
     console.error('[Summarizer] AI generation failed:', error);
@@ -85,12 +95,13 @@ async function generateSummary(text: string) {
  */
 async function saveSummary(supabase: any, userId: string, title: string, originalFileName: string, fileUrl: string, summary: string) {
   console.log(`[Summarizer] [${new Date().toISOString()}] Saving results to 'summaries' table...`);
-  
+
   const { data, error } = await supabase
-    .from('summaries')
+    .from('ai_summaries')
     .insert([{
       user_id: userId,
-      file_name: title || originalFileName,
+      title: title || originalFileName,
+      original_file_name: originalFileName,
       file_url: fileUrl,
       summary: summary
     }])
@@ -115,10 +126,10 @@ async function saveSummary(supabase: any, userId: string, title: string, origina
  */
 export async function uploadAndSummarize(formData: FormData) {
   const supabase = createActionSupabaseClient();
-  
+
   try {
     console.log("[Summarizer] Starting uploadAndSummarize process...");
-    
+
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) throw new Error('You must be logged in to summarize documents.');
 
@@ -154,7 +165,7 @@ export async function uploadAndSummarize(formData: FormData) {
       console.error("[Summarizer] Storage Error:", uploadError);
       throw new Error(`Storage Error: ${uploadError.message}`);
     }
-    
+
     const { publicUrl, buffer, fileExt } = uploadResult;
 
     // 3. Extract Text
@@ -162,6 +173,8 @@ export async function uploadAndSummarize(formData: FormData) {
     console.log(`[Summarizer] Extracting text from ${fileExt}...`);
     try {
       if (fileExt === 'pdf') {
+        // Dynamic require to avoid build-time issues with Node.js built-ins
+        const pdf = require('pdf-parse');
         const pdfData = await pdf(buffer);
         text = pdfData.text;
       } else if (fileExt === 'docx') {
@@ -194,11 +207,11 @@ export async function uploadAndSummarize(formData: FormData) {
     let savedDoc;
     try {
       savedDoc = await saveSummary(
-        supabase, 
-        session.user.id, 
-        file.name, 
-        file.name, 
-        publicUrl, 
+        supabase,
+        session.user.id,
+        file.name,
+        file.name,
+        publicUrl,
         summary
       );
     } catch (dbError: any) {
@@ -209,7 +222,7 @@ export async function uploadAndSummarize(formData: FormData) {
     console.log("[Summarizer] Process complete. Revalidating paths...");
     revalidatePath('/dashboard/summarizer');
     revalidatePath('/dashboard');
-    
+
     return { success: true, data: savedDoc };
 
   } catch (error: any) {

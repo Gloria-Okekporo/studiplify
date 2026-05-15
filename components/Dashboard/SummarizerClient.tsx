@@ -165,7 +165,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                   >
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-8">
-                        <motion.div 
+                        <motion.div
                           whileHover={{ rotate: 12, scale: 1.1 }}
                           className="w-12 h-12 bg-accent-orange/10 rounded-2xl flex items-center justify-center text-accent-orange"
                         >
@@ -217,7 +217,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
               <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative bg-white w-full max-w-3xl max-h-[85vh] rounded-[3.5rem] shadow-soft-2xl border border-white/60 overflow-hidden flex flex-col">
                 <div className="p-10 lg:p-14 overflow-y-auto hide-scrollbar space-y-10">
                   <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md py-4 -mt-4 z-10 border-b border-border/10">
-                    <h3 className="text-2xl font-black text-text-dark tracking-tighter truncate max-w-[80%]">{selectedSummary.title || selectedSummary.original_file_name}</h3>
+                    <h3 className="text-2xl font-black text-text-dark tracking-tighter truncate max-w-[80%]">{selectedSummary.title || selectedSummary.title}</h3>
                     <button onClick={() => setSelectedSummary(null)} className="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-text-muted hover:text-text-dark transition-all">
                       <span className="material-symbols-outlined text-[20px]">close</span>
                     </button>

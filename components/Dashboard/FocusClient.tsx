@@ -137,26 +137,30 @@ export default function FocusClient({ initialStats }: { initialStats: any }) {
                 </div>
 
                 <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
-                  <button 
+                  <motion.button 
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
                     onClick={handleToggle}
                     className={`h-16 px-12 rounded-full font-black text-lg transition-all group relative overflow-hidden ${
                       isActive 
-                        ? 'bg-white text-text-dark hover:scale-105' 
-                        : 'bg-accent-orange text-white shadow-glow-primary hover:scale-105'
+                        ? 'bg-white text-text-dark' 
+                        : 'bg-accent-orange text-white shadow-glow-primary'
                     }`}
                   >
                     <span className="flex items-center gap-3 relative z-10">
                       <span className="material-symbols-outlined font-black">{isActive ? 'pause' : 'play_arrow'}</span>
                       {isActive ? 'Pause Session' : 'Start Focus Session'}
                     </span>
-                  </button>
+                  </motion.button>
                   {isActive && (
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={handleReset}
                       className="h-16 px-12 rounded-full font-black text-lg text-white/40 hover:text-white transition-colors"
                     >
                       Interrupt
-                    </button>
+                    </motion.button>
                   )}
                 </div>
               </div>
@@ -184,25 +188,33 @@ export default function FocusClient({ initialStats }: { initialStats: any }) {
               </AnimatePresence>
             </motion.section>
 
-            {/* Live Stats Grid */}
+              {/* Live Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
                 { label: 'Total Deep Work', value: stats?.totalHours || 0, unit: 'Hours', icon: 'timer', color: 'text-accent-purple', bg: 'bg-accent-purple/5' },
                 { label: 'Focus Streak', value: stats?.streak || 0, unit: 'Days', icon: 'local_fire_department', color: 'text-accent-orange', bg: 'bg-accent-orange/5' },
                 { label: 'Weekly Precision', value: Math.round(stats?.weeklyConsistency || 0), unit: '%', icon: 'bolt', color: 'text-accent-green', bg: 'bg-accent-green/5' },
               ].map((stat, i) => (
-                <div key={i} className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group hover:shadow-lg transition-all">
+                <motion.div 
+                  key={i} 
+                  whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group transition-all"
+                >
                   <div className="flex items-center justify-between mb-10">
-                    <div className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                    <motion.div 
+                      whileHover={{ rotate: 12 }}
+                      className={`w-14 h-14 rounded-2xl ${stat.bg} ${stat.color} flex items-center justify-center transition-transform`}
+                    >
                       <span className="material-symbols-outlined text-[28px] font-black">{stat.icon}</span>
-                    </div>
+                    </motion.div>
                     <span className="text-[10px] font-black text-text-muted uppercase tracking-widest opacity-40">{stat.label}</span>
                   </div>
                   <div className="flex items-baseline gap-2">
                     <span className="text-5xl font-black text-text-dark tracking-tighter tabular-nums leading-none">{stat.value}</span>
                     <span className="text-sm font-black text-text-muted uppercase tracking-widest opacity-40">{stat.unit}</span>
                   </div>
-                </div>
+                </motion.div>
               ))}
             </div>
 

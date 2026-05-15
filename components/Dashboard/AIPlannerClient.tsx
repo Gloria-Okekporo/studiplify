@@ -96,13 +96,15 @@ export default function AIPlannerClient({ studyPlans }: { studyPlans: any[] }) {
                       </p>
                     </div>
                     
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setShowGenerator(false)}
                       className="bg-accent-orange text-white px-6 py-3 rounded-2xl font-black text-xs uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 transition-all flex items-center gap-3"
                     >
                       <span className="material-symbols-outlined text-lg">close</span>
                       Close AI Planner
-                    </button>
+                    </motion.button>
                   </div>
 
                   <form onSubmit={handleSubmit} className="space-y-10">
@@ -159,14 +161,16 @@ export default function AIPlannerClient({ studyPlans }: { studyPlans: any[] }) {
                     </div>
 
                     <div className="pt-6">
-                      <button 
+                      <motion.button 
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
                         type="submit" 
                         disabled={isGenerating}
                         className="btn-primary !h-16 !px-12 !text-lg group"
                       >
                         {isGenerating ? 'Synthesizing...' : 'Architect My Plan'}
                         <span className="material-symbols-outlined group-hover:translate-x-2 transition-transform">bolt</span>
-                      </button>
+                      </motion.button>
                     </div>
                   </form>
                 </motion.div>
@@ -175,27 +179,37 @@ export default function AIPlannerClient({ studyPlans }: { studyPlans: any[] }) {
                 <motion.div key="planner" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12">
                    <div className="flex justify-between items-center mb-8">
                     <h3 className="text-2xl font-black text-text-dark tracking-tighter">Your Active Plans</h3>
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
                       onClick={() => setShowGenerator(true)}
                       className="btn-secondary !h-12 !px-8 flex items-center gap-3"
                     >
                       <span className="material-symbols-outlined">add</span>
                       New AI Plan
-                    </button>
+                    </motion.button>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                     {studyPlans.map((plan) => (
-                      <div key={plan.id} className="bg-white border border-border/40 rounded-[2.5rem] p-8 hover:shadow-lg transition-all group cursor-pointer">
-                        <div className="w-14 h-14 rounded-2xl bg-accent-orange/10 flex items-center justify-center text-accent-orange mb-6 group-hover:scale-110 transition-transform">
+                      <motion.div 
+                        key={plan.id} 
+                        whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                        whileTap={{ scale: 0.98 }}
+                        className="bg-white border border-border/40 rounded-[2.5rem] p-8 transition-all group cursor-pointer"
+                      >
+                        <motion.div 
+                          whileHover={{ rotate: 12 }}
+                          className="w-14 h-14 rounded-2xl bg-accent-orange/10 flex items-center justify-center text-accent-orange mb-6 transition-transform"
+                        >
                           <span className="material-symbols-outlined text-[28px] font-black">event_note</span>
-                        </div>
+                        </motion.div>
                         <h4 className="text-xl font-black text-text-dark tracking-tighter mb-2">{plan.title || 'Custom Study Plan'}</h4>
                         <p className="text-sm font-medium text-text-muted opacity-60 mb-6">Generated on {new Date(plan.created_at).toLocaleDateString()}</p>
-                        <div className="flex items-center gap-3 text-accent-orange font-black text-[10px] uppercase tracking-widest">
-                          View Timeline <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                        <div className="flex items-center gap-3 text-accent-orange font-black text-[10px] uppercase tracking-widest group-hover:gap-5 transition-all">
+                          View Timeline <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                     {studyPlans.length === 0 && (
                       <div className="col-span-full py-20 flex flex-col items-center justify-center text-center opacity-30">

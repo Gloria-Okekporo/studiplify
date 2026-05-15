@@ -136,13 +136,15 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
                 placeholder="Deploy a new study milestone..."
                 className="w-full h-20 bg-white border border-border/40 rounded-[2rem] px-8 pr-40 font-medium text-lg focus:ring-4 focus:ring-accent-orange/5 focus:border-accent-orange outline-none transition-all shadow-soft relative z-10"
               />
-              <button 
+              <motion.button 
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 type="submit"
                 disabled={isAdding || !newTaskTitle.trim()}
-                className="absolute right-3 top-3 bottom-3 px-8 bg-accent-orange text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 active:scale-95 transition-all z-20 disabled:opacity-50"
+                className="absolute right-3 top-3 bottom-3 px-8 bg-accent-orange text-white rounded-2xl font-black text-xs uppercase tracking-widest shadow-glow-orange hover:bg-accent-orange/90 transition-all z-20 disabled:opacity-50"
               >
                 {isAdding ? 'Syncing...' : 'Add Milestone'}
-              </button>
+              </motion.button>
             </form>
 
             {/* Tasks List */}
@@ -159,7 +161,9 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
                       task.completed ? 'bg-surface-dim/40 border-transparent' : 'bg-white border-border/40 hover:border-accent-orange/30 shadow-sm'
                     }`}
                   >
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleToggle(task.id, task.completed)}
                       className={`shrink-0 w-10 h-10 rounded-2xl border-2 flex items-center justify-center transition-all ${
                         task.completed 
@@ -168,7 +172,7 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
                       }`}
                     >
                       <span className="material-symbols-outlined text-[20px] font-black">check</span>
-                    </button>
+                    </motion.button>
 
                     <div className="flex-1 min-w-0">
                       <span className={`text-lg font-bold block truncate transition-all ${
@@ -192,12 +196,14 @@ export default function TasksClient({ initialTasks }: { initialTasks: any[] }) {
                       </div>
                     </div>
 
-                    <button 
+                    <motion.button 
+                      whileHover={{ scale: 1.1, backgroundColor: 'rgba(239, 68, 68, 0.1)', color: 'rgb(239, 68, 68)' }}
+                      whileTap={{ scale: 0.9 }}
                       onClick={() => handleDelete(task.id)}
-                      className="opacity-0 group-hover:opacity-40 hover:opacity-100 w-12 h-12 rounded-2xl flex items-center justify-center text-text-muted hover:bg-red-50 hover:text-red-500 transition-all"
+                      className="opacity-0 group-hover:opacity-40 w-12 h-12 rounded-2xl flex items-center justify-center text-text-muted transition-all"
                     >
                       <span className="material-symbols-outlined text-[22px]">delete</span>
-                    </button>
+                    </motion.button>
                   </motion.div>
                 ))}
               </AnimatePresence>

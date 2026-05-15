@@ -110,13 +110,15 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                     Generate instant assessments from your notes or topics to solidify your mastery.
                   </p>
                 </div>
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={() => setShowStartModal(true)}
                   className="btn-primary !h-16 !px-12 !text-lg shadow-glow-primary group shrink-0"
                 >
                   Generate New Quiz
                   <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">bolt</span>
-                </button>
+                </motion.button>
               </section>
             )}
 
@@ -147,8 +149,10 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
 
                         <div className="grid grid-cols-1 gap-4">
                           {activeQuiz.questions[currentQuestionIndex].options.map((option: string, i: number) => (
-                            <button
+                            <motion.button
                               key={i}
+                              whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 138, 76, 0.05)' }}
+                              whileTap={{ scale: 0.98 }}
                               onClick={() => handleAnswerSelect(i)}
                               className={`p-8 rounded-3xl text-left font-bold transition-all border-2 ${
                                 selectedAnswers[currentQuestionIndex] === i 
@@ -164,19 +168,21 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                                 </span>
                                 {option}
                               </div>
-                            </button>
+                            </motion.button>
                           ))}
                         </div>
 
                         <div className="pt-8 flex justify-end">
-                          <button 
+                          <motion.button 
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
                             disabled={selectedAnswers[currentQuestionIndex] === undefined}
                             onClick={handleNext}
                             className="btn-primary !h-16 !px-12 group"
                           >
                             {currentQuestionIndex === activeQuiz.questions.length - 1 ? 'Finalize Quiz' : 'Next Question'}
                             <span className="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
-                          </button>
+                          </motion.button>
                         </div>
                       </div>
                     </div>
@@ -212,25 +218,30 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
               ) : (
                 /* Historical List */
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {quizzes.map((q) => (
-                    <div key={q.id} className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group hover:shadow-lg transition-all relative overflow-hidden">
-                      <div className="relative z-10 flex flex-col h-full">
-                        <div className="flex items-center justify-between mb-8">
-                          <span className="px-3 py-1 bg-surface-dim border border-border/40 rounded-full text-[9px] font-black uppercase tracking-widest text-text-muted">
-                            {new Date(q.created_at).toLocaleDateString()}
-                          </span>
-                          <span className={`text-2xl font-black tracking-tighter ${q.score >= 80 ? 'text-accent-green' : q.score >= 50 ? 'text-accent-orange' : 'text-red-500'}`}>
-                            {q.score}%
-                          </span>
+                    {quizzes.map((q) => (
+                      <motion.div 
+                        key={q.id} 
+                        whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                        whileTap={{ scale: 0.98 }}
+                        className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group transition-all relative overflow-hidden cursor-pointer"
+                      >
+                        <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex items-center justify-between mb-8">
+                            <span className="px-3 py-1 bg-surface-dim border border-border/40 rounded-full text-[9px] font-black uppercase tracking-widest text-text-muted">
+                              {new Date(q.created_at).toLocaleDateString()}
+                            </span>
+                            <span className={`text-2xl font-black tracking-tighter ${q.score >= 80 ? 'text-accent-green' : q.score >= 50 ? 'text-accent-orange' : 'text-red-500'}`}>
+                              {q.score}%
+                            </span>
+                          </div>
+                          <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug">{q.topic}</h3>
+                          <div className="mt-auto pt-6 border-t border-border/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-40">
+                            <span>{q.questions.length} Concepts</span>
+                            <span className="material-symbols-outlined text-[18px]">history</span>
+                          </div>
                         </div>
-                        <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug">{q.topic}</h3>
-                        <div className="mt-auto pt-6 border-t border-border/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-40">
-                          <span>{q.questions.length} Concepts</span>
-                          <span className="material-symbols-outlined text-[18px]">history</span>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                      </motion.div>
+                    ))}
                 </div>
               )}
             </AnimatePresence>

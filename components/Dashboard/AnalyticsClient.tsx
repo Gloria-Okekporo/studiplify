@@ -89,14 +89,16 @@ export default function AnalyticsClient({ analyticsData }: { analyticsData: any[
                   </p>
                 </div>
                 
-                <button 
+                <motion.button 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
                   onClick={handleGenerateInsights}
                   disabled={isGenerating}
                   className="btn-primary !h-16 !px-12 !text-lg group shrink-0"
                 >
                   {isGenerating ? 'Analyzing Flow...' : 'Generate New Insights'}
                   <span className="material-symbols-outlined group-hover:rotate-12 transition-transform">bolt</span>
-                </button>
+                </motion.button>
               </div>
 
               <AnimatePresence>
@@ -151,13 +153,21 @@ export default function AnalyticsClient({ analyticsData }: { analyticsData: any[
                 { label: 'Tasks Done', value: totalTasks, icon: 'check_circle', color: 'text-accent-green', bg: 'bg-accent-green/5' },
                 { label: 'Avg Focus', value: `${avgFocus}%`, icon: 'bolt', color: 'text-accent-orange', bg: 'bg-accent-orange/5' },
               ].map((kpi, i) => (
-                <div key={i} className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group hover:shadow-lg transition-all">
-                  <div className={`w-14 h-14 rounded-2xl ${kpi.bg} ${kpi.color} flex items-center justify-center mb-10 group-hover:scale-110 transition-transform`}>
+                <motion.div 
+                  key={i} 
+                  whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group transition-all"
+                >
+                  <motion.div 
+                    whileHover={{ rotate: 12 }}
+                    className={`w-14 h-14 rounded-2xl ${kpi.bg} ${kpi.color} flex items-center justify-center mb-10 transition-transform`}
+                  >
                     <span className="material-symbols-outlined text-[28px] font-black">{kpi.icon}</span>
-                  </div>
+                  </motion.div>
                   <p className="text-[10px] font-black text-text-muted uppercase tracking-widest mb-2 opacity-40">{kpi.label}</p>
                   <h3 className="text-4xl font-black text-text-dark tracking-tighter tabular-nums leading-none">{kpi.value}</h3>
-                </div>
+                </motion.div>
               ))}
             </div>
 
