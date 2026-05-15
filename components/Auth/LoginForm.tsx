@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { signIn } from '@/lib/actions/auth';
+import { signIn, signInWithGoogle } from '@/lib/actions/auth';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
@@ -104,6 +104,7 @@ export default function LoginForm() {
 
         <button 
           type="button"
+          onClick={() => signInWithGoogle()}
           className="w-full h-16 bg-white border border-border/60 rounded-2xl flex items-center justify-center gap-4 hover:bg-surface-dim hover:border-accent-purple/30 transition-all active:scale-[0.98] shadow-sm group"
         >
           <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" />

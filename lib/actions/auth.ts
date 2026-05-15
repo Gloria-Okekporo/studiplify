@@ -89,3 +89,22 @@ export async function getUserProfile() {
 
   return profile;
 }
+
+export async function signInWithGoogle() {
+  const supabase = createActionSupabaseClient();
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+    },
+  });
+
+  if (error) {
+    return { success: false, error: error.message };
+  }
+
+  if (data.url) {
+    redirect(data.url);
+  }
+}
+

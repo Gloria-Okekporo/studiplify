@@ -290,24 +290,32 @@ export default function DashboardClient({
                   </div>
                 ))}
 
-                {/* Study Planner Preview (Full Width in this col) */}
-                <Link href="/dashboard/study-plan" className="md:col-span-3 bg-white border border-border/40 rounded-[3rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 hover:shadow-lg hover:border-accent-orange/20 transition-all group">
-                  <div className="flex items-center gap-8">
-                    <div className="w-16 h-16 rounded-[1.5rem] bg-accent-orange/10 flex items-center justify-center text-accent-orange group-hover:rotate-6 transition-transform">
-                      <span className="material-symbols-outlined text-[32px] font-black">event_note</span>
+                <Link href="/dashboard/study-plan" className="w-full">
+                  <motion.div 
+                    whileHover={{ y: -5, borderColor: 'rgba(255, 138, 76, 0.4)' }}
+                    whileTap={{ scale: 0.98 }}
+                    className="md:col-span-3 bg-white border border-border/40 rounded-[3rem] p-10 flex flex-col md:flex-row items-center justify-between gap-8 hover:shadow-lg transition-all group cursor-pointer"
+                  >
+                    <div className="flex items-center gap-8">
+                      <motion.div 
+                        whileHover={{ rotate: 12 }}
+                        className="w-16 h-16 rounded-[1.5rem] bg-accent-orange/10 flex items-center justify-center text-accent-orange group-hover:rotate-6 transition-transform"
+                      >
+                        <span className="material-symbols-outlined text-[32px] font-black">event_note</span>
+                      </motion.div>
+                      <div>
+                        <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-1">Study Plans</h3>
+                        <p className="text-sm font-medium text-text-muted opacity-70">
+                          {studyPlans.length > 0 
+                            ? `You have ${studyPlans.length} active roadmaps.` 
+                            : 'Adaptive roadmap synced with your goals.'}
+                        </p>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-1">Study Plans</h3>
-                      <p className="text-sm font-medium text-text-muted opacity-70">
-                        {studyPlans.length > 0 
-                          ? `You have ${studyPlans.length} active roadmaps.` 
-                          : 'Adaptive roadmap synced with your goals.'}
-                      </p>
+                    <div className="flex items-center gap-3 text-accent-orange font-black text-xs uppercase tracking-widest group-hover:gap-5 transition-all">
+                      {studyPlans.length > 0 ? 'View Roadmaps' : 'Generate Your Path'} <span className="material-symbols-outlined font-bold">arrow_forward</span>
                     </div>
-                  </div>
-                  <div className="flex items-center gap-3 text-accent-orange font-black text-xs uppercase tracking-widest group-hover:gap-5 transition-all">
-                    {studyPlans.length > 0 ? 'View Roadmaps' : 'Generate Your Path'} <span className="material-symbols-outlined font-bold">arrow_forward</span>
-                  </div>
+                  </motion.div>
                 </Link>
               </div>
 
@@ -371,26 +379,44 @@ export default function DashboardClient({
 
             {/* AI Tools Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Link href="/dashboard/summarizer" className="bg-white border border-border/40 rounded-[3rem] p-10 hover:shadow-lg hover:border-accent-purple/20 transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-accent-purple/10 flex items-center justify-center text-accent-purple mb-6 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-[28px] font-black">summarize</span>
-                </div>
-                <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-2">Note Summarizer</h3>
-                <p className="text-sm font-medium text-text-muted opacity-70 mb-6 leading-relaxed">Compress lengthy lecture notes into key concepts instantly.</p>
-                <div className="text-accent-purple font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
-                  Try Now <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
-                </div>
+              <Link href="/dashboard/summarizer" className="block">
+                <motion.div 
+                  whileHover={{ y: -5, borderColor: 'rgba(255, 138, 76, 0.4)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white border border-border/40 rounded-[3rem] p-10 hover:shadow-lg transition-all group h-full"
+                >
+                  <motion.div 
+                    whileHover={{ rotate: 12 }}
+                    className="w-14 h-14 rounded-2xl bg-accent-orange/10 flex items-center justify-center text-accent-orange mb-6 group-hover:scale-110 transition-transform"
+                  >
+                    <span className="material-symbols-outlined text-[28px] font-black">summarize</span>
+                  </motion.div>
+                  <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-2">Note Summarizer</h3>
+                  <p className="text-sm font-medium text-text-muted opacity-70 mb-6 leading-relaxed">Compress lengthy lecture notes into key concepts instantly.</p>
+                  <div className="text-accent-orange font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
+                    Try Now <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
+                  </div>
+                </motion.div>
               </Link>
 
-              <Link href="/dashboard/quizzes" className="bg-white border border-border/40 rounded-[3rem] p-10 hover:shadow-lg hover:border-accent-orange/20 transition-all group">
-                <div className="w-14 h-14 rounded-2xl bg-accent-orange/10 flex items-center justify-center text-accent-orange mb-6 group-hover:scale-110 transition-transform">
-                  <span className="material-symbols-outlined text-[28px] font-black">quiz</span>
-                </div>
-                <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-2">Quiz Generator</h3>
-                <p className="text-sm font-medium text-text-muted opacity-70 mb-6 leading-relaxed">Test your knowledge with AI-generated practice questions.</p>
-                <div className="text-accent-orange font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
-                  Try Now <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
-                </div>
+              <Link href="/dashboard/quizzes" className="block">
+                <motion.div 
+                  whileHover={{ y: -5, borderColor: 'rgba(255, 138, 76, 0.4)' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="bg-white border border-border/40 rounded-[3rem] p-10 hover:shadow-lg transition-all group h-full"
+                >
+                  <motion.div 
+                    whileHover={{ rotate: 12 }}
+                    className="w-14 h-14 rounded-2xl bg-accent-orange/10 flex items-center justify-center text-accent-orange mb-6 group-hover:scale-110 transition-transform"
+                  >
+                    <span className="material-symbols-outlined text-[28px] font-black">quiz</span>
+                  </motion.div>
+                  <h3 className="text-2xl font-black text-text-dark tracking-tighter mb-2">Quiz Generator</h3>
+                  <p className="text-sm font-medium text-text-muted opacity-70 mb-6 leading-relaxed">Test your knowledge with AI-generated practice questions.</p>
+                  <div className="text-accent-orange font-black text-[10px] uppercase tracking-widest flex items-center gap-2 group-hover:gap-4 transition-all">
+                    Try Now <span className="material-symbols-outlined text-[16px] font-black">arrow_forward</span>
+                  </div>
+                </motion.div>
               </Link>
             </div>
             

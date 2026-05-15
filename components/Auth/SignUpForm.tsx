@@ -197,20 +197,7 @@ export default function SignUpForm() {
           <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-in-out"></div>
         </button>
 
-        <div className="relative py-4">
-          <div className="absolute inset-0 flex items-center"><div className="w-full border-t border-border/30"></div></div>
-          <div className="relative flex justify-center text-[10px] font-black uppercase tracking-widest">
-            <span className="bg-white px-4 text-text-muted/40">Alternative Gateways</span>
-          </div>
-        </div>
 
-        <button 
-          type="button"
-          className="w-full h-16 bg-white border border-border/60 rounded-2xl flex items-center justify-center gap-4 hover:bg-surface-dim hover:border-accent-purple/30 transition-all active:scale-[0.98] shadow-sm group"
-        >
-          <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5 grayscale group-hover:grayscale-0 transition-all" />
-          <span className="text-sm font-black text-text-dark uppercase tracking-widest">Continue with Google</span>
-        </button>
       </form>
 
       <div className="mt-10 pt-8 border-t border-border/30 text-center">

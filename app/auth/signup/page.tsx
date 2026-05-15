@@ -98,7 +98,7 @@ export default function SignUpPage() {
           <div className="relative group">
             <div className="absolute -inset-4 bg-accent-orange/10 blur-3xl rounded-[4rem] group-hover:bg-accent-purple/10 transition-colors duration-1000"></div>
             <img 
-              src="/studiplify_dashboard_mockup_1778733184782.png" 
+              src="/studiplify_dashboard_brand_mockup.png" 
               alt="Studiplify Neural Interface" 
               className="relative rounded-[3rem] shadow-soft-2xl border border-white/40 hover:scale-[1.02] transition-transform duration-700"
             />

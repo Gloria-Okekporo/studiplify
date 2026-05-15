@@ -14,17 +14,16 @@ async function uploadDocument(supabase: any, userId: string, file: File) {
   const arrayBuffer = await file.arrayBuffer();
   const buffer = Buffer.from(arrayBuffer);
 
-  console.log(`[Summarizer] [${new Date().toISOString()}] Ensuring bucket 'summaries' exists...`);
-  
-  // Ensure bucket exists
+
+  // Ensure bucket exists - we'll try to create it, if it fails it likely already exists
   try {
     const { data: buckets } = await supabase.storage.listBuckets();
-    if (!buckets?.find((b: any) => b.name === 'summaries')) {
+    const bucketExists = buckets?.some((b: any) => b.name === 'summaries');
+    if (!bucketExists) {
       await supabase.storage.createBucket('summaries', { public: true });
     }
-  } catch (bucketError) {
-    console.error('[Summarizer] Bucket check/creation failed:', bucketError);
-    // Continue anyway, as it might exist but listBuckets failed
+  } catch (e) {
+    console.warn('[Summarizer] Bucket check/creation error (continuing):', e);
   }
 
   console.log(`[Summarizer] [${new Date().toISOString()}] Uploading ${file.name} to storage...`);
@@ -34,8 +33,8 @@ async function uploadDocument(supabase: any, userId: string, file: File) {
     .upload(fileName, buffer, { contentType: file.type, upsert: true });
 
   if (error) {
-    console.error('[Summarizer] Storage upload failed:', error);
-    throw new Error(`Upload failed: ${error.message}`);
+    console.error('[Summarizer] Storage upload failed. Check RLS policies for bucket "summaries".', error);
+    throw new Error(`Upload failed: ${error.message}. Ensure "summaries" bucket is public or has correct RLS.`);
   }
 
   const { data: { publicUrl } } = supabase.storage.from('summaries').getPublicUrl(fileName);
@@ -85,33 +84,8 @@ async function generateSummary(text: string) {
  * Modular function to save results ONLY to ai_summaries
  */
 async function saveSummary(supabase: any, userId: string, title: string, originalFileName: string, fileUrl: string, summary: string) {
-  console.log(`[Summarizer] [${new Date().toISOString()}] Attempting to save summary...`);
+  console.log(`[Summarizer] [${new Date().toISOString()}] Saving results to 'summaries' table...`);
   
-  // Try 'ai_summaries' first, then 'summaries' as fallback
-  let errorToReport = null;
-  
-  try {
-    const { data, error } = await supabase
-      .from('ai_summaries')
-      .insert([{
-        user_id: userId,
-        title: title || originalFileName,
-        original_file_name: originalFileName,
-        file_url: fileUrl,
-        summary: summary
-      }])
-      .select();
-    
-    if (!error && data && data.length > 0) {
-      console.log(`[Summarizer] Saved to 'ai_summaries' table.`);
-      return data[0];
-    }
-    errorToReport = error;
-  } catch (e) {
-    console.warn("[Summarizer] 'ai_summaries' insert failed, trying 'summaries'...");
-  }
-
-  // Fallback to 'summaries' table
   const { data, error } = await supabase
     .from('summaries')
     .insert([{
@@ -124,11 +98,11 @@ async function saveSummary(supabase: any, userId: string, title: string, origina
     .single();
 
   if (error) {
-    console.error('[Summarizer] All save attempts failed:', error, errorToReport);
-    throw new Error(`Database save failed: ${error.message}`);
+    console.error('[Summarizer] Database save failed:', error);
+    throw new Error(`Neural sync failed: ${error.message}`);
   }
 
-  console.log(`[Summarizer] Saved to 'summaries' table.`);
+  console.log(`[Summarizer] Successfully saved document ${data.id}`);
   return {
     ...data,
     title: data.file_name,
@@ -143,33 +117,49 @@ export async function uploadAndSummarize(formData: FormData) {
   const supabase = createActionSupabaseClient();
   
   try {
+    console.log("[Summarizer] Starting uploadAndSummarize process...");
+    
     const { data: { session } } = await supabase.auth.getSession();
-    if (!session) throw new Error('Unauthorized');
+    if (!session) throw new Error('You must be logged in to summarize documents.');
 
-    // Ensure profile exists (safety check for FK constraint)
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('id')
-      .eq('id', session.user.id)
-      .single();
+    // 1. Ensure profile exists (safety check for FK constraint)
+    try {
+      const { data: profile, error: profileError } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', session.user.id)
+        .single();
 
-    if (!profile) {
-      await supabase.from('profiles').insert([{
-        id: session.user.id,
-        email: session.user.email,
-        full_name: session.user.user_metadata?.full_name || 'Student User'
-      }]);
+      if (profileError || !profile) {
+        console.log("[Summarizer] Profile not found, creating one...");
+        await supabase.from('profiles').insert([{
+          id: session.user.id,
+          email: session.user.email,
+          full_name: session.user.user_metadata?.full_name || 'Student User'
+        }]);
+      }
+    } catch (profileCatch) {
+      console.warn("[Summarizer] Profile check failed, proceeding anyway:", profileCatch);
     }
 
     const file = formData.get('file') as File;
-    if (!file) throw new Error('No file provided');
+    if (!file) throw new Error('No file was received. Please try selecting the file again.');
 
-    // 1. Upload
-    const { publicUrl, buffer, fileExt } = await uploadDocument(supabase, session.user.id, file);
+    // 2. Upload to Storage
+    console.log(`[Summarizer] Uploading file: ${file.name}`);
+    let uploadResult;
+    try {
+      uploadResult = await uploadDocument(supabase, session.user.id, file);
+    } catch (uploadError: any) {
+      console.error("[Summarizer] Storage Error:", uploadError);
+      throw new Error(`Storage Error: ${uploadError.message}`);
+    }
+    
+    const { publicUrl, buffer, fileExt } = uploadResult;
 
-    // 2. Extract Text
+    // 3. Extract Text
     let text = '';
-    console.log(`[Summarizer] [${new Date().toISOString()}] Extracting text from ${fileExt}...`);
+    console.log(`[Summarizer] Extracting text from ${fileExt}...`);
     try {
       if (fileExt === 'pdf') {
         const pdfData = await pdf(buffer);
@@ -181,36 +171,50 @@ export async function uploadAndSummarize(formData: FormData) {
         text = buffer.toString('utf-8');
       }
     } catch (extractError: any) {
-      console.error('[Summarizer] Text extraction failed:', extractError);
-      text = "Extraction failed. Document saved for review.";
+      console.error('[Summarizer] Extraction Warning:', extractError);
+      text = "Extraction limit reached or format unsupported. AI will attempt to summarize visible metadata.";
     }
 
     if (!text || text.trim().length < 5) {
-      text = "Document content appears empty or unreadable.";
+      text = `Filename: ${file.name}. Content could not be parsed but file is saved.`;
     }
 
-    // 3. Summarize
-    const summary = await generateSummary(text);
+    // 4. Summarize via Gemini
+    console.log("[Summarizer] Calling Gemini AI...");
+    let summary = "Summary pending...";
+    try {
+      summary = await generateSummary(text);
+    } catch (aiError) {
+      console.error("[Summarizer] AI Error:", aiError);
+      summary = "AI was unable to process this document at this time.";
+    }
 
-    // 4. Save
-    const savedDoc = await saveSummary(
-      supabase, 
-      session.user.id, 
-      file.name, 
-      file.name, 
-      publicUrl, 
-      summary
-    );
+    // 5. Save to Database
+    console.log("[Summarizer] Saving to Database...");
+    let savedDoc;
+    try {
+      savedDoc = await saveSummary(
+        supabase, 
+        session.user.id, 
+        file.name, 
+        file.name, 
+        publicUrl, 
+        summary
+      );
+    } catch (dbError: any) {
+      console.error("[Summarizer] DB Error:", dbError);
+      throw new Error(`Database Error: ${dbError.message}`);
+    }
 
-    console.log(`[Summarizer] [${new Date().toISOString()}] Syncing pages...`);
-    revalidatePath('/dashboard/summarizer', 'page');
-    revalidatePath('/dashboard', 'layout');
-    revalidatePath('/', 'layout');
+    console.log("[Summarizer] Process complete. Revalidating paths...");
+    revalidatePath('/dashboard/summarizer');
+    revalidatePath('/dashboard');
+    
     return { success: true, data: savedDoc };
 
   } catch (error: any) {
-    console.error('[Summarizer] Entry point failed:', error);
-    return { success: false, error: error.message };
+    console.error('[Summarizer] Fatal Error:', error);
+    return { success: false, error: error.message || 'An unexpected error occurred during synthesis.' };
   }
 }
 
@@ -222,26 +226,13 @@ export async function getSummaries() {
     const { data: { session } } = await supabase.auth.getSession();
     if (!session) return { success: false, error: 'Unauthorized' };
 
-    console.log(`[Summarizer] [${new Date().toISOString()}] Fetching summaries...`);
+    console.log(`[Summarizer] [${new Date().toISOString()}] Fetching summaries from 'summaries' table...`);
 
-    // Try 'ai_summaries' first
-    let { data, error } = await supabase
-      .from('ai_summaries')
+    const { data, error } = await supabase
+      .from('summaries')
       .select('*')
       .eq('user_id', session.user.id)
       .order('created_at', { ascending: false });
-
-    if (error || !data || data.length === 0) {
-      console.warn("[Summarizer] 'ai_summaries' fetch failed, trying 'summaries'...");
-      const fallback = await supabase
-        .from('summaries')
-        .select('*')
-        .eq('user_id', session.user.id)
-        .order('created_at', { ascending: false });
-      
-      data = fallback.data;
-      error = fallback.error;
-    }
 
     if (error) throw error;
 

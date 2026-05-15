@@ -108,7 +108,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
             {/* Upload Section */}
             <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-accent-purple/10 text-accent-purple rounded-full text-[11px] font-black uppercase tracking-widest border border-accent-purple/20">
+                <div className="inline-flex items-center gap-2.5 px-4 py-1.5 bg-accent-green/10 text-accent-green rounded-full text-[11px] font-black uppercase tracking-widest border border-accent-green/20">
                   <span className="material-symbols-outlined text-[16px] font-bold">description</span>
                   Document Intel
                 </div>
@@ -129,7 +129,9 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   disabled={isUploading}
                 />
-                <button
+                <motion.button
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
                   className={`btn-primary !h-16 !px-12 !text-lg shadow-glow-primary group flex items-center gap-3 ${isUploading ? 'opacity-50 pointer-events-none' : ''}`}
                 >
                   {isUploading ? (
@@ -138,7 +140,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                     <span className="material-symbols-outlined font-black">upload_file</span>
                   )}
                   {isUploading ? 'Synthesizing...' : 'Upload Document'}
-                </button>
+                </motion.button>
               </div>
             </section>
 
@@ -158,13 +160,17 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
+                    whileHover={{ y: -5 }}
                     className="bg-white border border-border/40 rounded-[2.5rem] p-8 lg:p-10 flex flex-col group hover:shadow-lg transition-all relative overflow-hidden"
                   >
                     <div className="relative z-10 flex flex-col h-full">
                       <div className="flex items-center justify-between mb-8">
-                        <div className="w-12 h-12 bg-surface-dim rounded-2xl flex items-center justify-center text-accent-purple">
+                        <motion.div 
+                          whileHover={{ rotate: 12, scale: 1.1 }}
+                          className="w-12 h-12 bg-accent-orange/10 rounded-2xl flex items-center justify-center text-accent-orange"
+                        >
                           <span className="material-symbols-outlined text-[24px] font-bold">article</span>
-                        </div>
+                        </motion.div>
                         <span className="text-[10px] font-black text-text-muted uppercase tracking-widest opacity-40">
                           {s.created_at ? new Date(s.created_at).toLocaleDateString() : 'Just now'}
                         </span>
@@ -173,13 +179,15 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                       <p className="text-[14px] font-medium text-text-muted line-clamp-3 mb-8 leading-relaxed">
                         {s.summary}
                       </p>
-                      <button
+                      <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedSummary(s)}
-                        className="mt-auto h-12 rounded-2xl border border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-surface-dim transition-all flex items-center justify-center gap-2"
+                        className="mt-auto h-12 rounded-2xl border border-border/40 font-black text-[10px] uppercase tracking-widest hover:bg-accent-orange/5 hover:border-accent-orange/30 hover:text-accent-orange transition-all flex items-center justify-center gap-2"
                       >
                         Review Summary
                         <span className="material-symbols-outlined text-[18px]">open_in_full</span>
-                      </button>
+                      </motion.button>
                     </div>
                   </motion.div>
                 ))}
@@ -192,7 +200,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                 <p className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] opacity-30">No Documents Synthesized Yet</p>
                 <button
                   onClick={refreshSummaries}
-                  className="text-[10px] font-bold text-accent-purple uppercase tracking-widest hover:underline"
+                  className="text-[10px] font-bold text-accent-orange uppercase tracking-widest hover:underline"
                 >
                   Manual Neural Refresh
                 </button>
@@ -220,7 +228,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                     </div>
                   </div>
                   <div className="pt-8 flex justify-between items-center border-t border-border/10">
-                    <a href={selectedSummary.file_url} target="_blank" className="text-[11px] font-black text-accent-purple uppercase tracking-widest hover:underline flex items-center gap-2">
+                    <a href={selectedSummary.file_url} target="_blank" className="text-[11px] font-black text-accent-orange uppercase tracking-widest hover:underline flex items-center gap-2">
                       <span className="material-symbols-outlined text-[18px]">download</span>
                       Download Original
                     </a>
