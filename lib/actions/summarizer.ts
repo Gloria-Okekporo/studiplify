@@ -97,11 +97,10 @@ async function saveSummary(supabase: any, userId: string, title: string, origina
   console.log(`[Summarizer] [${new Date().toISOString()}] Saving results to 'summaries' table...`);
 
   const { data, error } = await supabase
-    .from('ai_summaries')
+    .from('summaries')
     .insert([{
       user_id: userId,
-      title: title || originalFileName,
-      original_file_name: originalFileName,
+      file_name: title || originalFileName,
       file_url: fileUrl,
       summary: summary
     }])

@@ -14,7 +14,7 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
   const { user, logout } = useAuth();
   const { showToast } = useToast();
   const router = useRouter();
-  
+
   const [quizzes, setQuizzes] = useState(initialQuizzes);
   const [activeQuiz, setActiveQuiz] = useState<any>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -70,14 +70,27 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
     });
 
     const finalScore = Math.round((correctCount / activeQuiz.questions.length) * 100);
-    setIsFinished(true);
     
     try {
       await saveQuizResult(activeQuiz.id, finalScore);
       setQuizzes([{ ...activeQuiz, score: finalScore }, ...quizzes]);
+      setIsFinished(true);
     } catch (error) {
-      showToast("Failed to save result.", "error");
+      showToast("Failed to save result permanently, but here are your results.", "error");
+      setIsFinished(true); // Still show results even if saving failed
     }
+  };
+
+  const handleReviewPastQuiz = (quiz: any) => {
+    // Reconstruct selected answers if possible, or just show the quiz questions
+    // Since we don't store individual answers in the DB (only the score), 
+    // we can only show the questions and correct answers for historical quizzes.
+    // However, if we want to show 'Review', we need to adapt the view.
+    setActiveQuiz(quiz);
+    setIsFinished(true);
+    // For historical quizzes, we might not have the user's specific answers saved.
+    // Let's assume for now we just show the correct ones or leave them blank.
+    setSelectedAnswers([]); 
   };
 
   const handleSignOut = async () => {
@@ -94,7 +107,7 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
 
         <div className="flex-1 overflow-y-auto hide-scrollbar">
           <div className="max-w-[1400px] mx-auto px-8 lg:px-12 py-8 space-y-12 pb-32">
-            
+
             {/* Hero Section */}
             {!activeQuiz && (
               <section className="flex flex-col md:flex-row justify-between items-start md:items-center gap-8">
@@ -110,7 +123,7 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                     Generate instant assessments from your notes or topics to solidify your mastery.
                   </p>
                 </div>
-                <motion.button 
+                <motion.button
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowStartModal(true)}
@@ -125,7 +138,7 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
             {/* Quiz Active View */}
             <AnimatePresence mode="wait">
               {activeQuiz ? (
-                <motion.div 
+                <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -154,16 +167,14 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                               whileHover={{ scale: 1.02, backgroundColor: 'rgba(255, 138, 76, 0.05)' }}
                               whileTap={{ scale: 0.98 }}
                               onClick={() => handleAnswerSelect(i)}
-                              className={`p-8 rounded-3xl text-left font-bold transition-all border-2 ${
-                                selectedAnswers[currentQuestionIndex] === i 
-                                  ? 'bg-accent-orange/5 border-accent-orange text-accent-orange' 
+                              className={`p-8 rounded-3xl text-left font-bold transition-all border-2 ${selectedAnswers[currentQuestionIndex] === i
+                                  ? 'bg-accent-orange/5 border-accent-orange text-accent-orange'
                                   : 'bg-surface-dim border-border/30 text-text-dark/70 hover:border-accent-orange/30'
-                              }`}
+                                }`}
                             >
                               <div className="flex items-center gap-6">
-                                <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-[12px] font-black border-2 ${
-                                  selectedAnswers[currentQuestionIndex] === i ? 'bg-accent-orange text-white border-accent-orange' : 'bg-white border-border/40 text-text-muted'
-                                }`}>
+                                <span className={`w-10 h-10 rounded-xl flex items-center justify-center text-[12px] font-black border-2 ${selectedAnswers[currentQuestionIndex] === i ? 'bg-accent-orange text-white border-accent-orange' : 'bg-white border-border/40 text-text-muted'
+                                  }`}>
                                   {String.fromCharCode(65 + i)}
                                 </span>
                                 {option}
@@ -173,7 +184,7 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                         </div>
 
                         <div className="pt-8 flex justify-end">
-                          <motion.button 
+                          <motion.button
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             disabled={selectedAnswers[currentQuestionIndex] === undefined}
@@ -195,53 +206,145 @@ export default function QuizClient({ initialQuizzes }: { initialQuizzes: any[] }
                         <h2 className="text-5xl font-black text-text-dark tracking-tighter leading-none">Assessment Complete</h2>
                         <div className="flex items-center justify-center gap-4">
                           <span className="text-7xl font-black text-accent-green tracking-tighter tabular-nums">
-                            {Math.round((selectedAnswers.filter((a, i) => a === activeQuiz.questions[i].correctAnswer).length / activeQuiz.questions.length) * 100)}%
+                            {selectedAnswers.length > 0 
+                              ? Math.round((selectedAnswers.filter((a, i) => a === activeQuiz.questions[i].correctAnswer).length / activeQuiz.questions.length) * 100)
+                              : (activeQuiz.score || 0)}%
                           </span>
                           <span className="text-lg font-black text-text-muted uppercase tracking-widest opacity-40">Global Rank</span>
                         </div>
                       </div>
 
-                      <div className="space-y-6 text-left border-t border-border/20 pt-12">
-                        <h4 className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em]">Neural Insights</h4>
-                        {activeQuiz.questions.map((q: any, i: number) => (
-                          <div key={i} className={`p-6 rounded-3xl border ${selectedAnswers[i] === q.correctAnswer ? 'bg-accent-green/5 border-accent-green/20' : 'bg-red-50 border-red-100'}`}>
-                            <p className="font-bold text-text-dark mb-2">{q.question}</p>
-                            <p className="text-sm font-medium opacity-80">{q.explanation}</p>
-                          </div>
-                        ))}
+                      <div className="space-y-8 text-left border-t border-border/10 pt-10">
+                        <h4 className="text-[11px] font-black text-text-muted uppercase tracking-[0.3em] px-2">Detailed Review</h4>
+                        <div className="grid gap-6">
+                          {activeQuiz.questions?.map((q: any, i: number) => {
+                            const userAnswer = selectedAnswers[i];
+                            const hasUserAnswer = userAnswer !== undefined;
+                            const isCorrect = hasUserAnswer && userAnswer === q.correctAnswer;
+                            
+                            return (
+                              <div
+                                key={i}
+                                className={`p-8 rounded-[2.5rem] border-2 transition-all ${
+                                  !hasUserAnswer 
+                                    ? 'bg-surface-dim border-border/20' 
+                                    : isCorrect 
+                                      ? 'bg-accent-green/5 border-accent-green/20' 
+                                      : 'bg-red-500/5 border-red-500/20'
+                                }`}
+                              >
+                                <div className="flex items-start gap-6">
+                                  <div className={`w-10 h-10 rounded-xl shrink-0 flex items-center justify-center text-[14px] font-black ${
+                                    !hasUserAnswer
+                                      ? 'bg-text-muted/20 text-text-muted'
+                                      : isCorrect 
+                                        ? 'bg-accent-green text-white' 
+                                        : 'bg-red-500 text-white'
+                                  }`}>
+                                    {!hasUserAnswer ? (i + 1) : isCorrect ? '✓' : '×'}
+                                  </div>
+                                  <div className="space-y-4 flex-1">
+                                    <p className="font-bold text-text-dark text-lg leading-tight">{q.question}</p>
+                                    <div className="space-y-2">
+                                      {hasUserAnswer && (
+                                        <div className="flex items-center gap-2 text-sm">
+                                          <span className="text-text-muted font-bold">Your answer:</span>
+                                          <span className={isCorrect ? 'text-accent-green font-black' : 'text-red-500 font-black'}>
+                                            {q.options[userAnswer]}
+                                          </span>
+                                        </div>
+                                      )}
+                                      <div className="flex items-center gap-2 text-sm">
+                                        <span className="text-text-muted font-bold">Correct answer:</span>
+                                        <span className="text-accent-green font-black">{q.options[q.correctAnswer]}</span>
+                                      </div>
+                                    </div>
+                                    <div className="p-4 bg-white/50 rounded-2xl border border-border/10">
+                                      <p className="text-sm text-text-muted italic leading-relaxed">
+                                        <span className="font-black uppercase text-[10px] tracking-widest mr-2 not-italic opacity-50">Insight:</span>
+                                        {q.explanation}
+                                      </p>
+                                    </div>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
                       </div>
 
-                      <button onClick={() => setActiveQuiz(null)} className="btn-secondary !h-16 !px-12">Return to Hub</button>
+                      <div className="pt-12">
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => {
+                            setActiveQuiz(null);
+                            setIsFinished(false);
+                          }}
+                          className="btn-primary w-full !h-16 !text-lg"
+                        >
+                          Back to Assessments
+                          <span className="material-symbols-outlined">restart_alt</span>
+                        </motion.button>
+                      </div>
                     </div>
                   )}
                 </motion.div>
               ) : (
                 /* Historical List */
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {quizzes.map((q) => (
-                      <motion.div 
-                        key={q.id} 
-                        whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
-                        whileTap={{ scale: 0.98 }}
-                        className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group transition-all relative overflow-hidden cursor-pointer"
+                <div className="space-y-8">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-2xl font-black text-text-dark tracking-tighter">Recent Assessments</h3>
+                  </div>
+
+                  {quizzes.length > 0 ? (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                      {quizzes.map((q) => (
+                        <motion.div
+                          key={q.id}
+                          whileHover={{ y: -5, boxShadow: '0 20px 25px -5px rgb(0 0 0 / 0.1)' }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => handleReviewPastQuiz(q)}
+                          className="bg-white border border-border/40 rounded-[2.5rem] p-10 flex flex-col group transition-all relative overflow-hidden cursor-pointer"
+                        >
+                          <div className="relative z-10 flex flex-col h-full">
+                            <div className="flex items-center justify-between mb-8">
+                              <span className="px-3 py-1 bg-surface-dim border border-border/40 rounded-full text-[9px] font-black uppercase tracking-widest text-text-muted">
+                                {new Date(q.created_at).toLocaleDateString()}
+                              </span>
+                              <span className={`text-2xl font-black tracking-tighter ${q.score >= 80 ? 'text-accent-green' : q.score >= 50 ? 'text-accent-orange' : 'text-red-500'}`}>
+                                {q.score}%
+                              </span>
+                            </div>
+                            <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug">{q.topic}</h3>
+                            <div className="mt-auto pt-6 border-t border-border/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-40">
+                              <span>{q.questions?.length || 0} Concepts</span>
+                              <div className="flex items-center gap-1 group-hover:text-accent-orange transition-colors">
+                                <span>Review</span>
+                                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
+                              </div>
+                            </div>
+                          </div>
+                        </motion.div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="bg-white border-2 border-dashed border-border/40 rounded-[3rem] p-20 text-center space-y-6">
+                      <div className="w-20 h-20 bg-surface-dim rounded-full flex items-center justify-center mx-auto text-text-muted/30">
+                        <span className="material-symbols-outlined text-[40px]">history</span>
+                      </div>
+                      <div className="space-y-2">
+                        <h4 className="text-xl font-black text-text-dark tracking-tighter">No assessments yet</h4>
+                        <p className="text-text-muted font-medium">Your quiz history will appear here once you complete your first assessment.</p>
+                      </div>
+                      <button 
+                        onClick={() => setShowStartModal(true)}
+                        className="text-accent-green font-black text-xs uppercase tracking-[0.2em] hover:underline"
                       >
-                        <div className="relative z-10 flex flex-col h-full">
-                          <div className="flex items-center justify-between mb-8">
-                            <span className="px-3 py-1 bg-surface-dim border border-border/40 rounded-full text-[9px] font-black uppercase tracking-widest text-text-muted">
-                              {new Date(q.created_at).toLocaleDateString()}
-                            </span>
-                            <span className={`text-2xl font-black tracking-tighter ${q.score >= 80 ? 'text-accent-green' : q.score >= 50 ? 'text-accent-orange' : 'text-red-500'}`}>
-                              {q.score}%
-                            </span>
-                          </div>
-                          <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug">{q.topic}</h3>
-                          <div className="mt-auto pt-6 border-t border-border/10 flex items-center justify-between text-[10px] font-black uppercase tracking-widest text-text-muted opacity-40">
-                            <span>{q.questions.length} Concepts</span>
-                            <span className="material-symbols-outlined text-[18px]">history</span>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
+                        Generate your first quiz
+                      </button>
+                    </div>
+                  )}
                 </div>
               )}
             </AnimatePresence>

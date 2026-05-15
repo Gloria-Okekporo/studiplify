@@ -157,6 +157,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                 {summaries.map((s) => (
                   <motion.div
                     key={s.id}
+                    onClick={() => setSelectedSummary(s)}
                     layout
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -175,7 +176,7 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
                           {s.created_at ? new Date(s.created_at).toLocaleDateString() : 'Just now'}
                         </span>
                       </div>
-                      <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug line-clamp-2">{s.title || s.original_file_name}</h3>
+                      <h3 className="text-xl font-black text-text-dark tracking-tighter mb-4 leading-snug line-clamp-2">{s.title || s.file_name}</h3>
                       <p className="text-[14px] font-medium text-text-muted line-clamp-3 mb-8 leading-relaxed">
                         {s.summary}
                       </p>
@@ -217,13 +218,14 @@ export default function SummarizerClient({ initialSummaries }: { initialSummarie
               <motion.div initial={{ opacity: 0, scale: 0.95, y: 20 }} animate={{ opacity: 1, scale: 1, y: 0 }} exit={{ opacity: 0, scale: 0.95, y: 20 }} className="relative bg-white w-full max-w-3xl max-h-[85vh] rounded-[3.5rem] shadow-soft-2xl border border-white/60 overflow-hidden flex flex-col">
                 <div className="p-10 lg:p-14 overflow-y-auto hide-scrollbar space-y-10">
                   <div className="flex items-center justify-between sticky top-0 bg-white/80 backdrop-blur-md py-4 -mt-4 z-10 border-b border-border/10">
-                    <h3 className="text-2xl font-black text-text-dark tracking-tighter truncate max-w-[80%]">{selectedSummary.title || selectedSummary.title}</h3>
+                    <h3 className="text-2xl font-black text-text-dark tracking-tighter truncate max-w-[80%]">{selectedSummary.title || selectedSummary.file_name || selectedSummary.title}</h3>
                     <button onClick={() => setSelectedSummary(null)} className="w-10 h-10 rounded-full bg-surface-dim flex items-center justify-center text-text-muted hover:text-text-dark transition-all">
                       <span className="material-symbols-outlined text-[20px]">close</span>
                     </button>
                   </div>
                   <div className="prose prose-studiplify max-w-none">
                     <div className="text-[16px] font-medium text-text-dark/80 leading-relaxed whitespace-pre-wrap">
+                      <pre>{JSON.stringify(selectedSummary, null, 2)}</pre>
                       {selectedSummary.summary}
                     </div>
                   </div>
