@@ -4,6 +4,11 @@
 
 Your Studiplify project is now **fully built and ready for testing**. Everything has been set up with industry best practices.
 
+##Screenshots
+
+### Landing Page
+![Landing Page](screenshot%202026-06-01%20070643.png)
+
 ---
 
 ## 📦 WHAT YOU HAVE
