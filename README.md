@@ -7,7 +7,7 @@ Your Studiplify project is now **fully built and ready for testing**. Everything
 ##Screenshots
 
 ### Landing Page
-![Landing Page](screenshot%202026-06-01%20070643.png)
+![Landing Page](screenshot 2026-06-01 070643.png)
 
 ---
 
